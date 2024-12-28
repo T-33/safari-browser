@@ -1,5 +1,15 @@
-#IDEA#
-.idea
+# IntelliJ IDEA specific
+ .idea/
+ *.iml
+ *.iws
+ *.ipr
+ out/
+ .idea_modules/
+
+ # Compiled files
+ *.class
+ target/
+ build/
 
 #Project#
 ...
