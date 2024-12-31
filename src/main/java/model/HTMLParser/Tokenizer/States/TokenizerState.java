@@ -1,6 +1,6 @@
 package model.HTMLParser.Tokenizer.States;
 
-import Tokenizer.Tokenizer;
+import model.HTMLParser.Tokenizer.Tokenizer;
 
 public interface TokenizerState {
     void handleChar(Tokenizer tokenizer, char c);

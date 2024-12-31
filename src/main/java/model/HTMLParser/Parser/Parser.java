@@ -1,9 +1,9 @@
 package model.HTMLParser.Parser;
 
-import Tokenizer.Tokenizer;
-import Tokenizer.Tokens.CharacterToken;
-import Tokenizer.Tokens.EndOfFileToken;
-import Tokenizer.Tokens.TagToken;
+import model.HTMLParser.Tokenizer.Tokenizer;
+import model.HTMLParser.Tokenizer.Tokens.CharacterToken;
+import model.HTMLParser.Tokenizer.Tokens.EndOfFileToken;
+import model.HTMLParser.Tokenizer.Tokens.TagToken;
 
 public class Parser {
     private final Tokenizer tokenizer;

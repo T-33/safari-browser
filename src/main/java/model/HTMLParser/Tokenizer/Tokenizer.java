@@ -1,11 +1,11 @@
 package model.HTMLParser.Tokenizer;
 
-import Parser.Parser;
-import Tokenizer.States.DataState;
-import Tokenizer.States.TokenizerState;
-import Tokenizer.Tokens.CharacterToken;
-import Tokenizer.Tokens.EndOfFileToken;
-import Tokenizer.Tokens.TagToken;
+import model.HTMLParser.Parser.Parser;
+import model.HTMLParser.Tokenizer.States.DataState;
+import model.HTMLParser.Tokenizer.States.TokenizerState;
+import model.HTMLParser.Tokenizer.Tokens.CharacterToken;
+import model.HTMLParser.Tokenizer.Tokens.EndOfFileToken;
+import model.HTMLParser.Tokenizer.Tokens.TagToken;
 
 public class Tokenizer {
     private final Parser parser;

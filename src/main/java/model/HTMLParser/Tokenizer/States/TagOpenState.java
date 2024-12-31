@@ -1,7 +1,7 @@
 package model.HTMLParser.Tokenizer.States;
 
-import Tokenizer.Tokenizer;
-import Tokenizer.Tokens.TagToken;
+import model.HTMLParser.Tokenizer.Tokenizer;
+import model.HTMLParser.Tokenizer.Tokens.TagToken;
 
 import java.util.HashMap;
 
