@@ -50,4 +50,8 @@ public class TagToken {
     public void appendCharName(char c) {
         tagName.append(c);
     }
+
+    public void appendNewAttribute() {
+        attributes.put(newAttributeName.toString(), newAttributeValue.toString());
+    }
 }

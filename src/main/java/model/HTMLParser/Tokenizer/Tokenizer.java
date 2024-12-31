@@ -56,8 +56,9 @@ public class Tokenizer {
         parser.onCharacterToken(characterToken);
     }
 
-    public void emitCurrentTag() {
-        parser.onOpenTagToken(currentTagToken);
+    public void emitCurrentTagToken() {
+        currentTagToken.appendNewAttribute();
+        parser.onTagToken(currentTagToken);
     }
 
     public void emitEndOfFileToken() {

@@ -5,6 +5,8 @@ import model.HTMLParser.Tokenizer.Tokens.CharacterToken;
 import model.HTMLParser.Tokenizer.Tokens.EndOfFileToken;
 import model.HTMLParser.Tokenizer.Tokens.TagToken;
 
+import java.util.Map;
+
 public class Parser {
     private final Tokenizer tokenizer;
 
@@ -17,8 +19,13 @@ public class Parser {
         System.out.println(characterToken.getData());
     }
 
-    public void onOpenTagToken(TagToken tagToken) {
+    public void onTagToken(TagToken tagToken) {
         System.out.println("<" + tagToken.getTagName() + ">");
+
+        for (Map.Entry<String, String> entry : tagToken.getAttributes().entrySet()) {
+            System.out.println("attrName: " + entry.getKey());
+            System.out.println("value: " + entry.getValue());
+        }
     }
 
     public void onEndOfFileToken(EndOfFileToken endOfFileToken) {

@@ -2,16 +2,15 @@ package model.HTMLParser.Tokenizer.States;
 
 import model.HTMLParser.Tokenizer.Tokenizer;
 
-public class AttributeValueSingleQuotedState implements TokenizerState {
+public class AttributeValueDoubleQuotedState implements TokenizerState {
 
-    private static AttributeValueSingleQuotedState INSTANCE;
+    private static AttributeValueDoubleQuotedState INSTANCE;
 
-    private AttributeValueSingleQuotedState() {
-    }
+    private AttributeValueDoubleQuotedState() {}
 
-    public static AttributeValueSingleQuotedState getInstance() {
+    public static AttributeValueDoubleQuotedState getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new AttributeValueSingleQuotedState();
+            INSTANCE = new AttributeValueDoubleQuotedState();
         }
 
         return INSTANCE;
@@ -21,11 +20,11 @@ public class AttributeValueSingleQuotedState implements TokenizerState {
     public void handleChar(Tokenizer tokenizer, char c) {
         if (tokenizer.isEndOfFile()) {
             tokenizer.emitEndOfFileToken();
-        } else if (c == '\'') {
+        } else if (c == '\"') {
             tokenizer.setState(AfterAttributeValueState.getInstance());
         } else {
             tokenizer.getCurrentTagToken().appendAttributeValue(c);
-            System.out.println("Appended attribute value c: " + c);
+            System.out.println("Appended value c: " + c);
         }
     }
 }

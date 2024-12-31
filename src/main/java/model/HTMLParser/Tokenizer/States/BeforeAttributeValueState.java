@@ -23,11 +23,16 @@ public class BeforeAttributeValueState implements TokenizerState {
                 c == '\t' || c == '\r' || c == '\f' || c == '\n' || Character.isWhitespace(c);
 
         if (tokenizer.isEndOfFile()) {
-            //todo
+            //todo???????????????????????????????
         } else if (isIgnored) {
             return;
         } else if (c == '\'') {
-            tokenizer.setState();
+            tokenizer.setState(AttributeValueSingleQuotedState.getInstance());
+        } else if (c == '\"') {
+            tokenizer.setState(AttributeValueDoubleQuotedState.getInstance());
+        } else if (c == '>') {
+            tokenizer.setState(DataState.getInstance());
+            tokenizer.emitCurrentTagToken();
         }
     }
 }

@@ -30,7 +30,7 @@ public class TagNameState implements TokenizerState {
             System.out.println("set to before attribute name state " + c);
         } else if (c == '>') {
             tokenizer.setState(DataState.getInstance());
-            tokenizer.emitCurrentTag();
+            tokenizer.emitCurrentTagToken();
         } else if (String.valueOf(c).matches("^[A-Z]+$")) {
             tokenizer.getCurrentTagToken().appendCharName(Character.toLowerCase(c));
         } else {

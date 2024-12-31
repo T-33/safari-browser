@@ -19,9 +19,10 @@ public class AttributeNameState implements TokenizerState {
 
     @Override
     public void handleChar(Tokenizer tokenizer, char c) {
-        System.out.println(c);
         if (tokenizer.isEndOfFile()) {
             //todo work
+        } else if(c == '=') {
+            tokenizer.setState(BeforeAttributeValueState.getInstance());
         } else if (String.valueOf(c).matches("^[A-Z]+$")) {
             //todo maybe find proper Character::method for uppercase chars
             tokenizer.getCurrentTagToken().appendAttributeName(Character.toLowerCase(c));
