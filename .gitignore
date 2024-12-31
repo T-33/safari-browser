@@ -1,6 +1,9 @@
 # IntelliJ IDEA specific
  .idea/
- *.iml
+!.idea/modules.xml
+!.idea/vcs.xml
+!.idea/codeStyles/
+!.idea/runConfigurations/
  *.iws
  *.ipr
  out/
