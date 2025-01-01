@@ -20,7 +20,8 @@ public class Parser {
     }
 
     public void onTagToken(TagToken tagToken) {
-        System.out.println("<" + tagToken.getTagName() + ">");
+        System.out.println(tagToken.isEndToken() ? "endTag" : "openTag");
+        System.out.println("<" + (tagToken.isEndToken() ? "/" : "")+ tagToken.getTagName() + ">");
 
         for (Map.Entry<String, String> entry : tagToken.getAttributes().entrySet()) {
             System.out.println("attrName: " + entry.getKey());

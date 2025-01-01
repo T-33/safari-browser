@@ -5,16 +5,18 @@ import java.util.Map;
 public class TagToken {
     private final StringBuilder tagName;
     private boolean isSelfClosing;
+    private boolean isEndToken;
     private final Map<String, String> attributes;
 
     private StringBuilder newAttributeName;
     private StringBuilder newAttributeValue;
 
-    public TagToken(String tagName, boolean isSelfClosing, Map<String, String> attributes) {
+    public TagToken(String tagName, boolean isSelfClosing, boolean isEndToken, Map<String, String> attributes) {
         this.tagName = new StringBuilder(tagName);
         this.newAttributeName = new StringBuilder();
         this.newAttributeValue = new StringBuilder();
         this.isSelfClosing = isSelfClosing;
+        this.isEndToken = isEndToken;
         this.attributes = attributes;
     }
 
@@ -26,8 +28,16 @@ public class TagToken {
         return isSelfClosing;
     }
 
+    public boolean isEndToken() {
+        return isEndToken;
+    }
+
     public void setSelfClosing(boolean isSelfClosing) {
         this.isSelfClosing = isSelfClosing;
+    }
+
+    public void setIsEndToken(boolean isEndToken) {
+        this.isEndToken = isEndToken;
     }
 
     public Map<String, String> getAttributes() {

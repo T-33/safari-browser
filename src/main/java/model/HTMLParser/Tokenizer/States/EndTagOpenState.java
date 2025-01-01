@@ -3,19 +3,18 @@ package model.HTMLParser.Tokenizer.States;
 import model.HTMLParser.Tokenizer.Tokenizer;
 import model.HTMLParser.Tokenizer.Tokens.TagToken;
 
-import javax.xml.crypto.Data;
 import java.util.HashMap;
 
-public class TagOpenState implements TokenizerState {
+public class EndTagOpenState implements TokenizerState {
 
-    private static TagOpenState INSTANCE;
+    private static EndTagOpenState INSTANCE;
 
-    private TagOpenState() {
+    private EndTagOpenState() {
     }
 
-    public static TagOpenState getInstance() {
+    public static EndTagOpenState getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new TagOpenState();
+            INSTANCE = new EndTagOpenState();
         }
 
         return INSTANCE;
@@ -25,14 +24,14 @@ public class TagOpenState implements TokenizerState {
     public void handleChar(Tokenizer tokenizer, char c) {
         if (tokenizer.isEndOfFile()) {
             tokenizer.emitCharacterToken('<');
-        } else if (c == '/') {
-            tokenizer.setState(EndTagOpenState.getInstance());
+            tokenizer.emitCharacterToken('/');
+            tokenizer.emitEndOfFileToken();
         } else if (Character.isAlphabetic(c)) {
-
-            tokenizer.createTagToken(new TagToken("", false, false, new HashMap<>()));
+            tokenizer.createTagToken(new TagToken("", false, true, new HashMap<>()));
             tokenizer.setState(TagNameState.getInstance());
             tokenizer.reconsume();
-
+        } else if (c == '>') {
+            tokenizer.setState(DataState.getInstance());
         } else {
             tokenizer.emitCharacterToken('<');
             tokenizer.setState(DataState.getInstance());
