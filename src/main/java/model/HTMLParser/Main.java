@@ -16,6 +16,6 @@ public class Main {
                 </html>
          """;
 
-        Parser parser = new Parser("<h a='b'></h>");
+        Parser parser = new Parser("<h/>");
     }
 }

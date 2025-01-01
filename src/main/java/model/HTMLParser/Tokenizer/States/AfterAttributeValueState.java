@@ -29,6 +29,8 @@ public class AfterAttributeValueState implements TokenizerState {
         } else if (c == '>') {
             tokenizer.setState(DataState.getInstance());
             tokenizer.emitCurrentTagToken();
+        } else if (c == '/') {
+            tokenizer.setState(SelfClosingStartTagState.getInstance());
         } else {
             //missing whitespace between attributes
             tokenizer.setState(BeforeAttributeNameState.getInstance());

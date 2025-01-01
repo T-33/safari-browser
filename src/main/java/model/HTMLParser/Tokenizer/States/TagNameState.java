@@ -27,7 +27,8 @@ public class TagNameState implements TokenizerState {
             tokenizer.emitCharacterToken('<');
         } else if (isEscapeOrWhiteSpaceCharacter) {
             tokenizer.setState(BeforeAttributeNameState.getInstance());
-            System.out.println("set to before attribute name state " + c);
+        } else if (c == '/') {
+            tokenizer.setState(SelfClosingStartTagState.getInstance());
         } else if (c == '>') {
             tokenizer.setState(DataState.getInstance());
             tokenizer.emitCurrentTagToken();
