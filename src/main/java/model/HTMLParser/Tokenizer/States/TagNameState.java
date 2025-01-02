@@ -23,6 +23,8 @@ public class TagNameState implements TokenizerState {
         boolean isEscapeOrWhiteSpaceCharacter =
                c == '\t' ||  c == '\r' || c == '\f' || c == '\n' || Character.isWhitespace(c);
 
+        boolean isAlphabeticUppercase = String.valueOf(c).matches("^[A-Z]+$");
+
         if (tokenizer.isEndOfFile()) {
             tokenizer.emitCharacterToken('<');
         } else if (isEscapeOrWhiteSpaceCharacter) {
@@ -32,7 +34,7 @@ public class TagNameState implements TokenizerState {
         } else if (c == '>') {
             tokenizer.setState(DataState.getInstance());
             tokenizer.emitCurrentTagToken();
-        } else if (String.valueOf(c).matches("^[A-Z]+$")) {
+        } else if (isAlphabeticUppercase) {
             tokenizer.getCurrentTagToken().appendCharName(Character.toLowerCase(c));
         } else {
             tokenizer.getCurrentTagToken().appendCharName(c);

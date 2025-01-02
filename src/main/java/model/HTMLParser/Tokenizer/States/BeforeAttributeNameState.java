@@ -22,12 +22,22 @@ public class BeforeAttributeNameState implements TokenizerState {
         boolean isIgnored =
                 c == '\t' || c == '\r' || c == '\f' || c == '\n' || Character.isWhitespace(c);
 
-        if (tokenizer.isEndOfFile()) {
-            //todo
-        } else if (!isIgnored) {
-            tokenizer.getCurrentTagToken().startNewAttribute();
-            tokenizer.setState(AttributeNameState.getInstance());
-            tokenizer.reconsume();
+        boolean isAfterAttributeName =
+                tokenizer.isEndOfFile() || c == '/' || c == '>';
+
+        if (!isIgnored) {
+            if (isAfterAttributeName) {
+                tokenizer.setState(AfterAttributeNameState.getInstance());
+                tokenizer.reconsume();
+            } else if (c == '=') {
+                tokenizer.getCurrentTagToken().startNewAttribute();
+                tokenizer.getCurrentTagToken().appendAttributeName(c);
+                tokenizer.setState(AttributeNameState.getInstance());
+            } else {
+                tokenizer.getCurrentTagToken().startNewAttribute();
+                tokenizer.setState(AttributeNameState.getInstance());
+                tokenizer.reconsume();
+            }
         }
     }
 }

@@ -45,7 +45,12 @@ public class TagToken {
     }
 
     public void startNewAttribute() {
-        appendNewAttribute();
+        //initially attribute name and attribute value are empty strings
+        //empty attribute name is invalid, emptry attribute value is valid
+        boolean isEmptyAttributeName = newAttributeName.toString().equals("");
+        if(!isEmptyAttributeName) {
+            appendNewAttribute();
+        }
         newAttributeName.setLength(0);
         newAttributeValue.setLength(0);
     }

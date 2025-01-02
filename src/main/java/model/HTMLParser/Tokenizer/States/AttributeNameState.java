@@ -20,13 +20,17 @@ public class AttributeNameState implements TokenizerState {
     @Override
     public void handleChar(Tokenizer tokenizer, char c) {
         boolean isAfterAttributeName =
-                c == '\t' || c == '\r' || c == '/' || c == '>' || c == '\f' || c == '\n' || Character.isWhitespace(c);
+                c == '\t' || c == '\r' || c == '/' || c == '>' ||
+                c == '\f' || c == '\n' || Character.isWhitespace(c);
+
+        boolean isAlphabeticUppercase = String.valueOf(c).matches("^[A-Z]+$");
 
         if (isAfterAttributeName || tokenizer.isEndOfFile()) {
-            tokenizer.setState(AfterAtt);
+            tokenizer.setState(AfterAttributeNameState.getInstance());
+            tokenizer.reconsume();
         } else if(c == '=') {
             tokenizer.setState(BeforeAttributeValueState.getInstance());
-        } else if (String.valueOf(c).matches("^[A-Z]+$")) {
+        } else if (isAlphabeticUppercase) {
             //todo maybe find proper Character::method for uppercase chars
             tokenizer.getCurrentTagToken().appendAttributeName(Character.toLowerCase(c));
         } else {
