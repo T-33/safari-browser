@@ -33,6 +33,9 @@ public class BeforeAttributeValueState implements TokenizerState {
         } else if (c == '>') {
             tokenizer.setState(DataState.getInstance());
             tokenizer.emitCurrentTagToken();
+        } else {
+            tokenizer.setState(AttributeValueUnquotedState.getInstance());
+            tokenizer.reconsume();
         }
     }
 }

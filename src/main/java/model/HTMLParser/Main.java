@@ -16,6 +16,6 @@ public class Main {
                 </html>
          """;
 
-        Parser parser = new Parser("<h/>");
+        Parser parser = new Parser("<h a=b checked>");
     }
 }

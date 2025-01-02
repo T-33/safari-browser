@@ -45,6 +45,7 @@ public class TagToken {
     }
 
     public void startNewAttribute() {
+        appendNewAttribute();
         newAttributeName.setLength(0);
         newAttributeValue.setLength(0);
     }

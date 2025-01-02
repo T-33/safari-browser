@@ -19,8 +19,11 @@ public class AttributeNameState implements TokenizerState {
 
     @Override
     public void handleChar(Tokenizer tokenizer, char c) {
-        if (tokenizer.isEndOfFile()) {
-            //todo work
+        boolean isAfterAttributeName =
+                c == '\t' || c == '\r' || c == '/' || c == '>' || c == '\f' || c == '\n' || Character.isWhitespace(c);
+
+        if (isAfterAttributeName || tokenizer.isEndOfFile()) {
+            tokenizer.setState(AfterAtt);
         } else if(c == '=') {
             tokenizer.setState(BeforeAttributeValueState.getInstance());
         } else if (String.valueOf(c).matches("^[A-Z]+$")) {
