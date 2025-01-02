@@ -68,6 +68,8 @@ public class TagToken {
     }
 
     public void appendNewAttribute() {
-        attributes.put(newAttributeName.toString(), newAttributeValue.toString());
+        if(!attributes.containsKey(newAttributeName.toString())) {
+            attributes.put(newAttributeName.toString(), newAttributeValue.toString());
+        }
     }
 }
