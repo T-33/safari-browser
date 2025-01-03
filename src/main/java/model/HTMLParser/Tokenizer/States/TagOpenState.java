@@ -25,11 +25,13 @@ public class TagOpenState implements TokenizerState {
     public void handleChar(Tokenizer tokenizer, char c) {
         if (tokenizer.isEndOfFile()) {
             tokenizer.emitCharacterToken('<');
+        } else if (c == '!') {
+            tokenizer.setState(MarkupDeclarationOpenState.getInstance());
         } else if (c == '/') {
             tokenizer.setState(EndTagOpenState.getInstance());
         } else if (Character.isAlphabetic(c)) {
 
-            tokenizer.createTagToken(new TagToken("", false, false, new HashMap<>()));
+            tokenizer.createTagToken();
             tokenizer.setState(TagNameState.getInstance());
             tokenizer.reconsume();
 

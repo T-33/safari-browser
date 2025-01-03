@@ -27,7 +27,8 @@ public class EndTagOpenState implements TokenizerState {
             tokenizer.emitCharacterToken('/');
             tokenizer.emitEndOfFileToken();
         } else if (Character.isAlphabetic(c)) {
-            tokenizer.createTagToken(new TagToken("", false, true, new HashMap<>()));
+            tokenizer.createTagToken();
+            tokenizer.getCurrentTagToken().setIsEndToken(true);
             tokenizer.setState(TagNameState.getInstance());
             tokenizer.reconsume();
         } else if (c == '>') {
