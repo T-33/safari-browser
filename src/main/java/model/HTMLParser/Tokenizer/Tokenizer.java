@@ -86,6 +86,10 @@ public class Tokenizer {
         return currentTagToken;
     }
 
+    public CommentToken getCurrentCommentToken() {
+        return currentCommentToken;
+    }
+
     public void emitCharacterToken(char c) {
         CharacterToken characterToken = new CharacterToken(String.valueOf(c));
         parser.onCharacterToken(characterToken);
@@ -94,6 +98,10 @@ public class Tokenizer {
     public void emitCurrentTagToken() {
         currentTagToken.appendNewAttribute();
         parser.onTagToken(currentTagToken);
+    }
+
+    public void emitCurrentCommentToken() {
+        parser.onCommentToken(currentCommentToken);
     }
 
     public void emitEndOfFileToken() {

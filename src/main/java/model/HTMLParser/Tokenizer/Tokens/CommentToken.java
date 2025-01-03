@@ -1,13 +1,17 @@
 package model.HTMLParser.Tokenizer.Tokens;
 
 public class CommentToken {
-    private final String data;
+    private final StringBuilder data;
 
     public CommentToken(String data) {
-        this.data =  data;
+        this.data =  new StringBuilder(data);
+    }
+
+    public void appendData(char c) {
+        data.append(c);
     }
 
     public String getData() {
-        return data;
+        return data.toString();
     }
 }
