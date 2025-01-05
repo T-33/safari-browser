@@ -3,6 +3,7 @@ package model.HTMLParser.Parser;
 import model.HTMLParser.Tokenizer.Tokenizer;
 import model.HTMLParser.Tokenizer.Tokens.CharacterToken;
 import model.HTMLParser.Tokenizer.Tokens.CommentToken;
+import model.HTMLParser.Tokenizer.Tokens.DoctypeToken;
 import model.HTMLParser.Tokenizer.Tokens.EndOfFileToken;
 import model.HTMLParser.Tokenizer.Tokens.TagToken;
 
@@ -37,5 +38,12 @@ public class Parser {
 
     public void onCommentToken(CommentToken currentCommentToken) {
         System.out.println("Comment: " + currentCommentToken.getData());
+    }
+
+    public void onDoctypeToken(DoctypeToken doctypeToken) {
+        System.out.println("Doctype");
+        System.out.println("name" + doctypeToken.getName());
+        System.out.println("pubID" + doctypeToken.getPublicIdentifier());
+        System.out.println("sysID" + doctypeToken.getSystemIdentifier());
     }
 }

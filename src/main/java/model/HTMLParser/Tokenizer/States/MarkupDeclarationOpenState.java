@@ -27,7 +27,7 @@ public class MarkupDeclarationOpenState implements TokenizerState {
             tokenizer.createCommentToken();
             tokenizer.setState(CommentStartState.getInstance());
         } else if (tokenizer.startsWithCaseInsensitive("doctype")) {
-            //skips word "doctype"
+            //consumes word "doctype"
             // todo is this^^^^ comment useful^^^?
             for (int i = 0; i < "doctype".length(); i++) {
                 tokenizer.skipCharacter();

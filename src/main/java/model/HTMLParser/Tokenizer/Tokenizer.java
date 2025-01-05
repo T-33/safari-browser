@@ -91,6 +91,10 @@ public class Tokenizer {
         return currentCommentToken;
     }
 
+    public DoctypeToken getCurrentDoctypeToken() {
+        return currentDoctypeToken;
+    }
+
     public void emitCharacterToken(char c) {
         CharacterToken characterToken = new CharacterToken(String.valueOf(c));
         parser.onCharacterToken(characterToken);
@@ -103,6 +107,10 @@ public class Tokenizer {
 
     public void emitCurrentCommentToken() {
         parser.onCommentToken(currentCommentToken);
+    }
+
+    public void emitCurrentDoctypeToken() {
+        parser.onDoctypeToken(currentDoctypeToken);
     }
 
     public void emitEndOfFileToken() {

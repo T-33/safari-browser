@@ -1,31 +1,48 @@
 package model.HTMLParser.Tokenizer.Tokens;
 
 public class DoctypeToken {
-    private final String name;
-    private final String publicIdentifier;
-    private final String systemIdentifier;
-    private final boolean forceQuirksFlag;
+    private final StringBuilder name;
+    private final StringBuilder publicIdentifier;
+    private final StringBuilder systemIdentifier;
+    private  boolean forceQuirksFlag;
 
     public DoctypeToken(String name, String publicIdentifier, String systemIdentifier, boolean forceQuirksFlag) {
-        this.name = name;
-        this.publicIdentifier = publicIdentifier;
-        this.systemIdentifier = systemIdentifier;
+        this.name = new StringBuilder(name);
+        this.publicIdentifier = new StringBuilder(publicIdentifier) ;
+        this.systemIdentifier = new StringBuilder(systemIdentifier) ;
         this.forceQuirksFlag = forceQuirksFlag;
     }
 
     public String getName() {
-        return name;
+        return name.toString();
     }
 
     public String getPublicIdentifier() {
-        return publicIdentifier;
+        return publicIdentifier.toString();
     }
 
     public String getSystemIdentifier() {
-        return systemIdentifier;
+        return systemIdentifier.toString();
     }
+
+    public void appendName(char c) {
+        name.append(c);
+    }
+
+    public void appendPublicIndentifier(char c) {
+        publicIdentifier.append(c);
+    }
+
+    public void appendSystemIdentifier(char c) {
+        systemIdentifier.append(c);
+    }
+
 
     public boolean isForceQuirksFlag() {
         return forceQuirksFlag;
+    }
+
+    public void setForceQuirksFlag(boolean forceQuirksFlag) {
+        this.forceQuirksFlag = forceQuirksFlag;
     }
 }

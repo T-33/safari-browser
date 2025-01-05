@@ -19,22 +19,18 @@ public class DoctypeState implements TokenizerState {
 
     @Override
     public void handleChar(Tokenizer tokenizer, char c) {
-        boolean isIgnored =
+        boolean isBeforeDoctype =
                 c == '\t' || c == '\r' || c == '\f' || c == '\n' || Character.isWhitespace(c);
 
         if (tokenizer.isEndOfFile()) {
-            //todo???????????????????????????????
-        } else if (isIgnored) {
-            return;
-        } else if (c == '\'') {
-            tokenizer.setState(AttributeValueSingleQuotedState.getInstance());
-        } else if (c == '\"') {
-            tokenizer.setState(AttributeValueDoubleQuotedState.getInstance());
-        } else if (c == '>') {
-            tokenizer.setState(DataState.getInstance());
-            tokenizer.emitCurrentTagToken();
+            tokenizer.createDoctypeToken();
+            tokenizer.getCurrentDoctypeToken().setForceQuirksFlag(true);
+            tokenizer.emitCurrentDoctypeToken();
+            tokenizer.emitEndOfFileToken();
+        } else if (isBeforeDoctype) {
+            tokenizer.setState(BeforeDoctypeNameState.getInstance());
         } else {
-            tokenizer.setState(AttributeValueUnquotedState.getInstance());
+            tokenizer.setState(BeforeDoctypeNameState.getInstance());
             tokenizer.reconsume();
         }
     }

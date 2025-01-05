@@ -24,7 +24,6 @@ public class AttributeValueDoubleQuotedState implements TokenizerState {
             tokenizer.setState(AfterAttributeValueState.getInstance());
         } else {
             tokenizer.getCurrentTagToken().appendAttributeValue(c);
-            System.out.println("Appended value c: " + c);
         }
     }
 }
