@@ -11,6 +11,8 @@ import model.HTMLParser.Tokenizer.Tokens.TagToken;
 
 import java.util.HashMap;
 
+//TODO Добавить тип onEndOfFileToken к состояниям чтобы реагировали . В текущем виде немного плачевно.
+
 public class Tokenizer {
     private final Parser parser;
     private final String input;
@@ -33,7 +35,6 @@ public class Tokenizer {
     public void tokenize() {
         while (true) {
             if(position >= input.length()) {
-                parser.onEndOfFileToken(new EndOfFileToken());
                 break;
             }
 

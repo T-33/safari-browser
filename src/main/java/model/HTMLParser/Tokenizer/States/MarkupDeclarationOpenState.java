@@ -24,7 +24,6 @@ public class MarkupDeclarationOpenState implements TokenizerState {
     public void handleChar(Tokenizer tokenizer, char c) {
         if (tokenizer.startsWith("--")) {
             tokenizer.skipCharacter();
-            tokenizer.skipCharacter();
             tokenizer.createCommentToken();
             tokenizer.setState(CommentStartState.getInstance());
         } else if (tokenizer.startsWithCaseInsensitive("doctype")) {

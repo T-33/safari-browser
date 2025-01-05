@@ -2,16 +2,16 @@ package model.HTMLParser.Tokenizer.States;
 
 import model.HTMLParser.Tokenizer.Tokenizer;
 
-public class CommentStartState implements TokenizerState {
+public class CommentStartDashState implements TokenizerState {
 
-    private static CommentStartState INSTANCE;
+    private static CommentStartDashState INSTANCE;
 
-    private CommentStartState() {
+    private CommentStartDashState() {
     }
 
-    public static CommentStartState getInstance() {
+    public static CommentStartDashState getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new CommentStartState();
+            INSTANCE = new CommentStartDashState();
         }
 
         return INSTANCE;
@@ -19,12 +19,14 @@ public class CommentStartState implements TokenizerState {
 
     @Override
     public void handleChar(Tokenizer tokenizer, char c) {
-        if (c == '-') {
-            tokenizer.setState(CommentStartDashState.getInstance());
+        if (tokenizer.isEndOfFile()) {
+            tokenizer.emitCurrentCommentToken();
+            tokenizer.emitEndOfFileToken();
         } else if (c == '>') {
             tokenizer.setState(DataState.getInstance());
             tokenizer.emitCurrentCommentToken();
         } else {
+            tokenizer.getCurrentCommentToken().appendData('-');
             tokenizer.setState(CommentState.getInstance());
             tokenizer.reconsume();
         }

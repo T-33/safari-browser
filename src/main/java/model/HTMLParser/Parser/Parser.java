@@ -2,6 +2,7 @@ package model.HTMLParser.Parser;
 
 import model.HTMLParser.Tokenizer.Tokenizer;
 import model.HTMLParser.Tokenizer.Tokens.CharacterToken;
+import model.HTMLParser.Tokenizer.Tokens.CommentToken;
 import model.HTMLParser.Tokenizer.Tokens.EndOfFileToken;
 import model.HTMLParser.Tokenizer.Tokens.TagToken;
 
@@ -32,5 +33,9 @@ public class Parser {
 
     public void onEndOfFileToken(EndOfFileToken endOfFileToken) {
         System.out.println("eof");
+    }
+
+    public void onCommentToken(CommentToken currentCommentToken) {
+        System.out.println("Comment: " + currentCommentToken.getData());
     }
 }

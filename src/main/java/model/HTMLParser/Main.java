@@ -1,6 +1,7 @@
 package model.HTMLParser;
 
 import model.HTMLParser.Parser.Parser;
+import model.HTMLParser.Tokenizer.Tokenizer;
 //TODO setState(enum States) -> ......................
 
 public class Main {
@@ -16,6 +17,6 @@ public class Main {
                 </html>
          """;
 
-        Parser parser = new Parser("<h a='b' a='d'>");
+        Parser parser = new Parser("<!---->");
     }
 }

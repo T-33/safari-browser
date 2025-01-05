@@ -1,10 +1,6 @@
 package model.HTMLParser.Tokenizer.States;
 
 import model.HTMLParser.Tokenizer.Tokenizer;
-import model.HTMLParser.Tokenizer.Tokens.TagToken;
-
-import javax.xml.crypto.Data;
-import java.util.HashMap;
 
 public class TagOpenState implements TokenizerState {
 

@@ -33,6 +33,7 @@ public class BeforeAttributeNameState implements TokenizerState {
                 tokenizer.getCurrentTagToken().startNewAttribute();
                 tokenizer.getCurrentTagToken().appendAttributeName(c);
                 tokenizer.setState(AttributeNameState.getInstance());
+                //todo ??
             } else {
                 tokenizer.getCurrentTagToken().startNewAttribute();
                 tokenizer.setState(AttributeNameState.getInstance());
