@@ -1,0 +1,33 @@
+package model.htmlParser.tokenizer.states;
+
+import model.htmlParser.tokenizer.Tokenizer;
+
+public class AttributeNameState implements TokenizerState {
+
+    private static AttributeNameState INSTANCE;
+
+    private AttributeNameState() {
+    }
+
+    public static AttributeNameState getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new AttributeNameState();
+        }
+
+        return INSTANCE;
+    }
+
+    @Override
+    public void handleChar(Tokenizer tokenizer, char c) {
+        if (tokenizer.isEndOfFile()) {
+            //todo work
+        } else if(c == '=') {
+            tokenizer.setState(BeforeAttributeValueState.getInstance());
+        } else if (String.valueOf(c).matches("^[A-Z]+$")) {
+            //todo maybe find proper Character::method for uppercase chars
+            tokenizer.getCurrentTagToken().appendAttributeName(Character.toLowerCase(c));
+        } else {
+            tokenizer.getCurrentTagToken().appendAttributeName(c);
+        }
+    }
+}
