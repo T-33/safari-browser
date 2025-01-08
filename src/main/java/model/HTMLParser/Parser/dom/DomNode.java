@@ -16,10 +16,9 @@ public abstract class DomNode {
      * @param child дочерний узел
      */
     public void addChild(DomNode child) {
-        if (child == null) {
-            return;
+        if (child != null) {
+            children.add(child);
         }
-        children.add(child);
     }
 
     /**

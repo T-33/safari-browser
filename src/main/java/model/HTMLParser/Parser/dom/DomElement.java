@@ -4,18 +4,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * DOM-элемент (тэг, например <div>).
+ * DOM-элемент (тэг).
  */
 public class DomElement extends DomNode {
-    private final String tagName;
-    private Map<String, String> attributes = new HashMap<>();
+    private String tagName;
+    private Map<String, String> attributes;
 
     public DomElement(String tagName) {
         this.tagName = tagName;
+        this.attributes = new HashMap<>();
     }
 
     public String getTagName() {
         return tagName;
+    }
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
     }
 
     public Map<String, String> getAttributes() {
@@ -23,9 +28,6 @@ public class DomElement extends DomNode {
     }
 
     public void setAttributes(Map<String, String> attributes) {
-        if (attributes == null) {
-            return;
-        }
-        this.attributes = attributes;
+        this.attributes = (attributes == null) ? new HashMap<>() : attributes;
     }
 }
