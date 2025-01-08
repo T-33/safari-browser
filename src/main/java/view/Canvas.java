@@ -20,10 +20,13 @@ public class Canvas extends JPanel {
         setLayout(new BorderLayout());
 
         JPanel urlPanel = new JPanel(); //почему создали панель
-        urlPanel.setLayout(new FlowLayout());
+        urlPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         urlField = new UrlField();
         searchButton = new SearchButton("Search");
+
+        urlField.setFocusable(true);
+        urlField.requestFocusInWindow();
 
         urlPanel.add(urlField);
         urlPanel.add(searchButton);

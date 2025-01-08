@@ -11,7 +11,7 @@ public class UrlField extends JComponent implements KeyListener {
 
     public UrlField() {
         text = new StringBuilder();
-        setPreferredSize(new Dimension(200, 30));
+        setPreferredSize(new Dimension(700, 30));
         addKeyListener(this);
         setFocusable(true);
     }
@@ -22,13 +22,16 @@ public class UrlField extends JComponent implements KeyListener {
         Graphics2D g2d = (Graphics2D) g;
 
         //фон
-        g2d.setColor(focused ? Color.LIGHT_GRAY : Color.WHITE);
+        g2d.setColor(focused ? Color.WHITE : Color.LIGHT_GRAY);
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
         //текст
         g2d.setColor(Color.BLACK);
+        FontMetrics fm = g2d.getFontMetrics();
+        int textX = 5;
+        int textY = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
         g2d.setFont(new Font("Arial", Font.PLAIN, 14));
-        g2d.drawString(text.toString(), 5, getHeight() / 2 + 5);
+        g2d.drawString(text.toString(), textX, textY);
 
         //границы
         g2d.setColor(Color.BLACK);
@@ -42,15 +45,15 @@ public class UrlField extends JComponent implements KeyListener {
         if(Character.isLetterOrDigit(c) || c == ' ') {
             text.append(c);
             repaint();
-        } else if (c == '\b' && !text.isEmpty()) {
-            text.deleteCharAt(text.length() - 1);
-            repaint();
         }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-
+        if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE && !text.isEmpty()) {
+            text.deleteCharAt(text.length() - 1);
+            repaint();
+        }
     }
 
     @Override
@@ -58,7 +61,19 @@ public class UrlField extends JComponent implements KeyListener {
 
     }
 
+    @Override
+    public void addNotify(){
+        super.addNotify();
+        requestFocusInWindow();
+    }
+
     public String getText() {
         return text.toString();
+    }
+
+    @Override
+    public void setFocusable(boolean focusable) {
+        super.setFocusable(focusable);
+        this.focused = focusable;
     }
 }

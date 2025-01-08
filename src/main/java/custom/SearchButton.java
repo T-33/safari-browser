@@ -12,7 +12,7 @@ public class SearchButton extends JComponent implements MouseListener {
 
     public SearchButton(String text) {
         this.text = text;
-        setPreferredSize(new Dimension(100, 40));
+        setPreferredSize(new Dimension(50, 30));
         addMouseListener(this);
     }
 
@@ -38,7 +38,7 @@ public class SearchButton extends JComponent implements MouseListener {
         g2d.setColor(Color.black);
         FontMetrics fm = g2d.getFontMetrics();
         int textWidth = (getWidth() - fm.stringWidth(text)) / 2;
-        int textHeight = (getHeight() - fm.getAscent()) / 2 - fm.getDescent();
+        int textHeight = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
         g2d.drawString(text, textWidth, textHeight);
 
         //границы
@@ -53,21 +53,25 @@ public class SearchButton extends JComponent implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        pressed = true;
+        repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        pressed = false;
+        repaint();
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
+        hovered = true;
+        repaint();
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-
+        hovered = false;
+        repaint();
     }
 }
