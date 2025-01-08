@@ -6,12 +6,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.RoundRectangle2D;
 
-public class SearchButton extends JComponent implements MouseListener {
+public class RedoButton extends JComponent implements MouseListener {
     private String text;
     private boolean hovered = false;
     private boolean pressed = false;
 
-    public SearchButton(String text) {
+    private RedoButton(String text) {
         this.text = text;
         setPreferredSize(new Dimension(50, 30));
         addMouseListener(this);
@@ -22,7 +22,6 @@ public class SearchButton extends JComponent implements MouseListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        //сглаживание
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         //фон
@@ -51,9 +50,7 @@ public class SearchButton extends JComponent implements MouseListener {
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
+    public void mouseClicked(MouseEvent e) {}
 
     @Override
     public void mousePressed(MouseEvent e) {

@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.RoundRectangle2D;
 
 public class UrlField extends JComponent implements KeyListener {
     private StringBuilder text;
@@ -21,9 +22,12 @@ public class UrlField extends JComponent implements KeyListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
         //фон
-        g2d.setColor(focused ? Color.WHITE : Color.LIGHT_GRAY);
-        g2d.fillRect(0, 0, getWidth(), getHeight());
+        g2d.setColor(Color.WHITE);
+        int arcSize = 15;
+        g2d.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), arcSize, arcSize));
 
         //текст
         g2d.setColor(Color.BLACK);
@@ -35,7 +39,7 @@ public class UrlField extends JComponent implements KeyListener {
 
         //границы
         g2d.setColor(Color.BLACK);
-        g2d.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+        g2d.draw(new RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, arcSize, arcSize));
     }
 
 
