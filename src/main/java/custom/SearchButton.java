@@ -46,7 +46,7 @@ public class SearchButton extends JComponent implements MouseListener {
         g2d.drawString(text, textWidth, textHeight);
 
         //границы
-        g2d.setColor(Color.blue);
+        g2d.setColor(Color.black);
         g2d.draw(new RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, arcSize, arcSize));
     }
 

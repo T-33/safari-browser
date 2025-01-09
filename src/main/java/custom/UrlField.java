@@ -12,7 +12,7 @@ public class UrlField extends JComponent implements KeyListener {
 
     public UrlField() {
         text = new StringBuilder();
-        setPreferredSize(new Dimension(700, 30));
+        setPreferredSize(new Dimension(500, 30));
         addKeyListener(this);
         setFocusable(true);
     }
@@ -70,6 +70,8 @@ public class UrlField extends JComponent implements KeyListener {
         super.addNotify();
         requestFocusInWindow();
     }
+    //Этот метод вызывается, когда компонент добавляется в контейнер.
+    //Вызывает requestFocusInWindow, чтобы сразу установить фокус на текстовом поле.
 
     public String getText() {
         return text.toString();

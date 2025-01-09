@@ -4,7 +4,6 @@ import custom.SearchButton;
 import custom.UrlField;
 import listeners.GenericKeyListeners;
 import listeners.GenericMouseListener;
-import model.Network;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +18,7 @@ public class Canvas extends JPanel {
 
         setLayout(new BorderLayout());
 
-        JPanel urlPanel = new JPanel(); //почему создали панель
+        JPanel urlPanel = new JPanel();
         urlPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         urlField = new UrlField();
@@ -33,10 +32,10 @@ public class Canvas extends JPanel {
         add(urlPanel, BorderLayout.NORTH);
 
         searchButton.addMouseListener(new GenericMouseListener(() -> {
-            //что происходит при нажатии кнопки
+            //логика загрузки страницы по URL
         }));
         urlField.addKeyListener(new GenericKeyListeners(() -> {
-            //логика загрузки URL
+            //логика передачи url из urlField а модель
         }));
     }
 

@@ -15,7 +15,6 @@ public class MainView extends JFrame {
 
         canvas = new Canvas();
         frame.add(canvas, BorderLayout.CENTER);
-
         frame.setVisible(true);
     }
 
