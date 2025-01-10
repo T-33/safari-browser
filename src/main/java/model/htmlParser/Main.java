@@ -1,11 +1,10 @@
 package model.htmlParser;
 
 import model.htmlParser.parser.Parser;
-import model.htmlParser.parser.dom.DomComment;
 import model.htmlParser.parser.dom.DomDocument;
-import model.htmlParser.parser.dom.DomElement;
-import model.htmlParser.parser.dom.DomNode;
-import model.htmlParser.parser.dom.DomText;
+import model.renderTree.dom.RenderNode;
+import model.renderTree.RenderTreeBuilder;
+import model.renderTree.dom.RenderNodeFactory;
 //TODO setState(enum States) -> ......................
 
 public class Main {
@@ -58,24 +57,12 @@ public class Main {
         Parser parser = new Parser(textBlock);
         DomDocument doc = parser.getDomDocument();
 
-        printDomTree(doc, 0);
-    }
+        RenderNodeFactory factory = new RenderNodeFactory();
+        RenderTreeBuilder builder = new RenderTreeBuilder(factory);
+        RenderNode root = builder.build(doc);
 
-    private static void printDomTree(DomNode node, int indent) {
-        String prefix = " ".repeat(indent * 2);
-        if (node instanceof DomDocument doc) {
-            System.out.println(prefix + "Document (doctype=" + doc.getDoctypeName() + ")");
-        } else if (node instanceof DomElement el) {
-            System.out.println(prefix + "Element: <" + el.getTagName() + "> attrs=" + el.getAttributes());
-        } else if (node instanceof DomText textNode) {
-            String t = textNode.getText().replaceAll("\\s+", " ").trim();
-            System.out.println(prefix + "Text: \"" + t + "\"");
-        } else if (node instanceof DomComment commentNode) {
-            System.out.println(prefix + "Comment: \"" + commentNode.getComment() + "\"");
-        }
-
-        for (DomNode child : node.getChildren()) {
-            printDomTree(child, indent + 1);
+        if (root != null) {
+            root.render();
         }
     }
 }
