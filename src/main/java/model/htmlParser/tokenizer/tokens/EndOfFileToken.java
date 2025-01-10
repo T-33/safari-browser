@@ -1,4 +1,6 @@
 package model.htmlParser.tokenizer.tokens;
 
-public class EndOfFileToken {
-}
+/**
+ * Token representing end of current tokenizer's input.
+ */
+public class EndOfFileToken {}

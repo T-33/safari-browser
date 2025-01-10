@@ -35,9 +35,9 @@ public class TagNameState implements TokenizerState {
             tokenizer.setState(DataState.getInstance());
             tokenizer.emitCurrentTagToken();
         } else if (isAlphabeticUppercase) {
-            tokenizer.getCurrentTagToken().appendCharName(Character.toLowerCase(c));
+            tokenizer.getCurrentTagToken().appendName(Character.toLowerCase(c));
         } else {
-            tokenizer.getCurrentTagToken().appendCharName(c);
+            tokenizer.getCurrentTagToken().appendName(c);
         }
     }
 }
