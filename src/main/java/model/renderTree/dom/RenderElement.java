@@ -10,7 +10,9 @@ public class RenderElement extends RenderNode {
     @Override
     public void render() {
         DomElement el = (DomElement) domNode;
-        System.out.println("Rendering Element: <" + el.getTagName() + ">");
+        System.out.println("Rendering Element: <" + el.getTagName() + "> at "
+                + getX() + "," + getY()
+                + " size " + getWidth() + "x" + getHeight());
         for (RenderNode child : children) {
             child.render();
         }

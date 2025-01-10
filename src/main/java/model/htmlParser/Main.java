@@ -2,6 +2,8 @@ package model.htmlParser;
 
 import model.htmlParser.parser.Parser;
 import model.htmlParser.parser.dom.DomDocument;
+import model.layout.LayoutConstants;
+import model.layout.LayoutEngine;
 import model.renderTree.dom.RenderNode;
 import model.renderTree.RenderTreeBuilder;
 import model.renderTree.dom.RenderNodeFactory;
@@ -59,7 +61,11 @@ public class Main {
 
         RenderNodeFactory factory = new RenderNodeFactory();
         RenderTreeBuilder builder = new RenderTreeBuilder(factory);
+
         RenderNode root = builder.build(doc);
+
+        LayoutEngine layout = new LayoutEngine(LayoutConstants.DEFAULT_WIDTH, 600);
+        layout.applyLayout(root);
 
         if (root != null) {
             root.render();
