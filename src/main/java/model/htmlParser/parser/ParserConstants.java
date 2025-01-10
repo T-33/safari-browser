@@ -1,12 +1,12 @@
 package model.htmlParser.parser;
 
-/**
- * Класс для хранения различных констант,
- * чтобы избавляться от "магических" строк/чисел в коде.
- */
 public final class ParserConstants {
 
     private ParserConstants() {}
+
+    public static final String COMMENT_LOG_PREFIX = "Comment token: ";
+    public static final String DOCTYPE_LOG_PREFIX = "Doctype token: ";
+    public static final String EOF_LOG = "Parsing finished (EOF).";
 
     public static final String AREA   = "area";
     public static final String BASE   = "base";
