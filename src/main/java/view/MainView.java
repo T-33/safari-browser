@@ -3,10 +3,17 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Main application window for the browser.
+ */
+
 public class MainView extends JFrame {
     private JFrame frame;
     private Canvas canvas;
 
+    /**
+     * Initializes the main window.
+     */
     public MainView() {
         frame = new JFrame("Safari Browser");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

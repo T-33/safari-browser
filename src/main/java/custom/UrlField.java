@@ -6,10 +6,17 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.RoundRectangle2D;
 
+/**
+ * Custom text input component for entering a URL.
+ */
+
 public class UrlField extends JComponent implements KeyListener {
     private StringBuilder text;
     private boolean focused = false;
 
+    /**
+     * Initializes the URL input field.
+     */
     public UrlField() {
         text = new StringBuilder();
         setPreferredSize(new Dimension(500, 30));
@@ -24,12 +31,12 @@ public class UrlField extends JComponent implements KeyListener {
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        //фон
+        // Draw background
         g2d.setColor(Color.WHITE);
         int arcSize = 15;
         g2d.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), arcSize, arcSize));
 
-        //текст
+        // Draw text
         g2d.setColor(Color.BLACK);
         FontMetrics fm = g2d.getFontMetrics();
         int textX = 5;
@@ -37,7 +44,7 @@ public class UrlField extends JComponent implements KeyListener {
         g2d.setFont(new Font("Arial", Font.PLAIN, 14));
         g2d.drawString(text.toString(), textX, textY);
 
-        //границы
+        // Draw border
         g2d.setColor(Color.BLACK);
         g2d.draw(new RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, arcSize, arcSize));
     }
@@ -46,7 +53,7 @@ public class UrlField extends JComponent implements KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
-        if(Character.isLetterOrDigit(c) || c == ' ') {
+        if(Character.isLetterOrDigit(c) || c == ' ' || ":/.?&=-".indexOf(c) != -1) {
             text.append(c);
             repaint();
         }
@@ -70,8 +77,6 @@ public class UrlField extends JComponent implements KeyListener {
         super.addNotify();
         requestFocusInWindow();
     }
-    //Этот метод вызывается, когда компонент добавляется в контейнер.
-    //Вызывает requestFocusInWindow, чтобы сразу установить фокус на текстовом поле.
 
     public String getText() {
         return text.toString();

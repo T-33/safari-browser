@@ -7,11 +7,21 @@ import listeners.GenericMouseListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+
+/**
+ * Canvas class representing the main panel of the browser.
+ * It contains the URL input field and the search button.
+ */
 
 public class Canvas extends JPanel {
     //?? модель не готова
-    private UrlField urlField;
-    private SearchButton searchButton;
+    private UrlField urlField; // Custom component for URL input
+    private SearchButton searchButton; // Custom component for search button
+
+    /**
+     * Initializes the canvas with a URL input field and a search button.
+     */
 
     public Canvas() {
         //this.model = model;
@@ -31,12 +41,26 @@ public class Canvas extends JPanel {
         urlPanel.add(searchButton);
         add(urlPanel, BorderLayout.NORTH);
 
+        // Listener for search button clicks
         searchButton.addMouseListener(new GenericMouseListener(() -> {
             //логика загрузки страницы по URL
+            String url = urlField.getText();
+            if(!url.isEmpty()){
+                System.out.println("Searching for: " + url); // Placeholder for page loading logic
+            }
         }));
-        urlField.addKeyListener(new GenericKeyListeners(() -> {
-            //логика передачи url из urlField а модель
-        }));
+
+        // Listener for Enter key press in URL field
+        urlField.addKeyListener(new GenericKeyListeners(
+                e -> e.getKeyCode() == KeyEvent.VK_ENTER,
+                () -> {
+                    String url = urlField.getText();
+                    if (!url.isEmpty()) {
+                        System.out.println("Entered URL: " + url); // Placeholder for passing URL to the model
+                    }
+                }
+        ));
+
     }
 
     public UrlField getUrlField() {
