@@ -6,29 +6,26 @@ import java.awt.*;
 /**
  * Main application window for the browser.
  */
-
 public class MainView extends JFrame {
-    private JFrame frame;
     private Canvas canvas;
 
-    /**
-     * Initializes the main window.
-     */
     public MainView() {
-        frame = new JFrame("Safari Browser");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setLayout(new BorderLayout());
+        super("Safari Browser");
+        initializeUI();
+    }
+
+    private void initializeUI() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
+        setLayout(new BorderLayout());
 
         canvas = new Canvas();
-        frame.add(canvas, BorderLayout.CENTER);
-        frame.setVisible(true);
+        add(canvas, BorderLayout.CENTER);
+
+        setVisible(true);
     }
 
-    public Canvas getCanvas(){
+    public Canvas getCanvas() {
         return canvas;
-    }
-    public JFrame getFrame(){
-        return frame;
     }
 }
