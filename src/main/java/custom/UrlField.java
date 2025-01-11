@@ -2,9 +2,13 @@ package custom;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.RoundRectangle2D;
+import java.io.IOException;
 
 /**
  * Custom text input component for entering a URL.
@@ -64,13 +68,26 @@ public class UrlField extends JComponent implements KeyListener {
         if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE && !text.isEmpty()) {
             text.deleteCharAt(text.length() - 1);
             repaint();
+        } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
+            pasteFromClopboard();
+        }
+    }
+
+    private void pasteFromClopboard() {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        try {
+            String clipboardText = (String) clipboard.getData(DataFlavor.stringFlavor);
+            if(clipboardText != null) {
+                text.append(clipboardText);
+                repaint();
+            }
+        }catch(UnsupportedFlavorException | IOException ex) {
+            ex.printStackTrace();
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
-
-    }
+    public void keyReleased(KeyEvent e) {}
 
     @Override
     public void addNotify(){
@@ -86,5 +103,10 @@ public class UrlField extends JComponent implements KeyListener {
     public void setFocusable(boolean focusable) {
         super.setFocusable(focusable);
         this.focused = focusable;
+    }
+
+    public void setText(String newText) {
+        text = new StringBuilder(newText);
+        repaint();
     }
 }

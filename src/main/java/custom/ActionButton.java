@@ -6,13 +6,23 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.RoundRectangle2D;
 
-public class RedoButton extends JComponent implements MouseListener {
+/**
+ * Custom button component with hover and click effects.
+ */
+
+public class ActionButton extends JComponent implements MouseListener {
     private String text;
     private boolean hovered = false;
     private boolean pressed = false;
+    private Runnable action;
 
-    private RedoButton(String text) {
+    /**
+     * Initializes the button with the given text.
+     * @param text The label displayed on the button.
+     */
+    public ActionButton(String text, Runnable action) {
         this.text = text;
+        this.action = action;
         setPreferredSize(new Dimension(50, 30));
         addMouseListener(this);
     }
@@ -22,35 +32,34 @@ public class RedoButton extends JComponent implements MouseListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
+        //сглаживание
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        //фон
-        if(pressed){
-            g2d.setColor(Color.gray);
-        } else if (hovered) {
-            g2d.setColor(Color.lightGray);
-        } else {
-            g2d.setColor(Color.white);
-        }
-        g2d.fillRect(0, 0, getWidth(), getHeight());
-
         int arcSize = 15;
+
+        // Draw button background
+        g2d.setColor(pressed ? Color.GRAY : hovered ? Color.LIGHT_GRAY : Color.WHITE);
         g2d.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), arcSize, arcSize));
 
-        //текст кнопки
+        // Draw button text
         g2d.setColor(Color.black);
+        g2d.setFont(new Font("Arial", Font.PLAIN, 14));
         FontMetrics fm = g2d.getFontMetrics();
         int textWidth = (getWidth() - fm.stringWidth(text)) / 2;
         int textHeight = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
         g2d.drawString(text, textWidth, textHeight);
 
-        //границы
-        g2d.setColor(Color.blue);
+        // Draw button border
+        g2d.setColor(Color.black);
         g2d.draw(new RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, arcSize, arcSize));
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+        if (action != null) {
+            action.run();
+        }
+    }
 
     @Override
     public void mousePressed(MouseEvent e) {

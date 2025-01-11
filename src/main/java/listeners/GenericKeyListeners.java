@@ -2,25 +2,29 @@ package listeners;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.function.Predicate;
 
 /**
- * A generic key listener to execute a specific action when the Enter key is pressed.
+ * A generic key listener to execute an action based on a condition.
  */
 public class GenericKeyListeners extends KeyAdapter {
-    private Runnable onEnter;
+    private Predicate<KeyEvent> condition;
+    private Runnable action;
 
     /**
-     * Initializes the listener with the action to perform.
-     * @param onEnter The action to execute when Enter is pressed.
+     * Initializes the listener with a condition and action.
+     * @param condition A predicate to check if the action should execute.
+     * @param action The action to execute if the condition is met.
      */
-    public GenericKeyListeners(Runnable onEnter) {
-        this.onEnter = onEnter;
+    public GenericKeyListeners(Predicate<KeyEvent> condition, Runnable action) {
+        this.condition = condition;
+        this.action = action;
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            onEnter.run();
+        if (condition.test(e)) {
+            action.run();
         }
     }
 }
