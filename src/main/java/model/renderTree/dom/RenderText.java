@@ -11,6 +11,8 @@ public class RenderText extends RenderNode {
     public void render() {
         DomText t = (DomText) domNode;
         String value = t.getText().replaceAll("\\s+", " ").trim();
-        System.out.println("Rendering Text: \"" + value + "\"");
+        System.out.println("Rendering Text: \"" + value + "\" at "
+                + getX() + "," + getY()
+                + " size " + getWidth() + "x" + getHeight());
     }
 }

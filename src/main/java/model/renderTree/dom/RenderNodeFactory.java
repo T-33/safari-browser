@@ -6,7 +6,6 @@ import model.htmlParser.parser.dom.DomElement;
 import model.htmlParser.parser.dom.DomText;
 
 public final class RenderNodeFactory {
-
     public RenderDocument createRenderDocument(DomDocument document) {
         return new RenderDocument(document);
     }

@@ -21,7 +21,6 @@ public final class RenderTreeBuilder {
         if (node == null) {
             return null;
         }
-
         if (node instanceof DomDocument doc) {
             RenderDocument renderDoc = factory.createRenderDocument(doc);
             doc.getChildren().forEach(child -> {
@@ -32,7 +31,6 @@ public final class RenderTreeBuilder {
             });
             return renderDoc;
         }
-
         if (node instanceof DomElement el) {
             RenderElement renderEl = factory.createRenderElement(el);
             el.getChildren().forEach(child -> {
@@ -43,15 +41,12 @@ public final class RenderTreeBuilder {
             });
             return renderEl;
         }
-
         if (node instanceof DomText text) {
             return factory.createRenderText(text);
         }
-
         if (node instanceof DomComment comment) {
             return factory.createRenderComment(comment);
         }
-
         return null;
     }
 }
