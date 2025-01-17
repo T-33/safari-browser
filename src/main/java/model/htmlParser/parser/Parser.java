@@ -17,12 +17,15 @@ import java.util.Map;
 import java.util.Stack;
 
 public class Parser {
-    private static final String EMPTY = "";
     private final Tokenizer tokenizer;
     private final DomDocument document;
     private final Stack<DomElement> elementStack;
     private final StringBuilder textBuffer;
     private final DomNodeFactory domNodeFactory;
+
+    private static final String PUBLIC_IDENTIFIER = ", publicId=";
+    private static final String SYSTEM_IDENTIFIER = ", systemId=";
+    private static final String EMPTY = "";
 
     public Parser(String input) {
         document = new DomDocument();
@@ -64,8 +67,8 @@ public class Parser {
         flushText();
         document.setDoctype(token.getName(), token.getPublicIdentifier(), token.getSystemIdentifier());
         System.out.println(ParserConstants.DOCTYPE_LOG_PREFIX + token.getName()
-                + ", publicId=" + token.getPublicIdentifier()
-                + ", systemId=" + token.getSystemIdentifier());
+                + PUBLIC_IDENTIFIER + token.getPublicIdentifier()
+                + SYSTEM_IDENTIFIER + token.getSystemIdentifier());
     }
 
     public void onEndOfFileToken(EndOfFileToken token) {
