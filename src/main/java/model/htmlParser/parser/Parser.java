@@ -3,6 +3,7 @@ package model.htmlParser.parser;
 import model.htmlParser.parser.dom.DomComment;
 import model.htmlParser.parser.dom.DomDocument;
 import model.htmlParser.parser.dom.DomElement;
+import model.htmlParser.parser.dom.DomNodeFactory;
 import model.htmlParser.parser.dom.DomText;
 import model.htmlParser.tokenizer.Tokenizer;
 import model.htmlParser.tokenizer.tokens.CharacterToken;
@@ -16,160 +17,136 @@ import java.util.Map;
 import java.util.Stack;
 
 public class Parser {
-
     private final Tokenizer tokenizer;
-    private final DomDocument domDocument;
+    private final DomDocument document;
     private final Stack<DomElement> elementStack;
     private final StringBuilder textBuffer;
+    private final DomNodeFactory domNodeFactory;
+
+    private static final String PUBLIC_IDENTIFIER = ", publicId=";
+    private static final String SYSTEM_IDENTIFIER = ", systemId=";
+    private static final String EMPTY = "";
 
     public Parser(String input) {
-        this.domDocument = new DomDocument();
-        this.elementStack = new Stack<>();
-        this.textBuffer = new StringBuilder();
-
-        this.tokenizer = new Tokenizer(this, input);
-        this.tokenizer.tokenize();
+        document = new DomDocument();
+        elementStack = new Stack<>();
+        textBuffer = new StringBuilder();
+        domNodeFactory = new DomNodeFactory();
+        tokenizer = new Tokenizer(this, input);
+        tokenizer.tokenize();
     }
 
-    /**
-     * Возвращаем результат парсинга (DomDocument).
-     */
     public DomDocument getDomDocument() {
-        return domDocument;
+        return document;
     }
 
-    /**
-     * Вызывается из токенайзера для каждого символа текста.
-     */
-    public void onCharacterToken(CharacterToken characterToken) {
-        textBuffer.append(characterToken.getData());
+    public void onCharacterToken(CharacterToken token) {
+        textBuffer.append(token.getData());
     }
 
-    /**
-     * Вызывается из токенайзера, когда встречается TagToken.
-     */
-    public void onTagToken(TagToken tagToken) {
-        if (!tagToken.isEndToken()) {
-            if (ParserUtils.isVoidElement(tagToken.getTagName())) {
-                tagToken.setSelfClosing(true);
-            }
+    public void onTagToken(TagToken token) {
+        if (!token.isEndToken() && ParserUtils.isVoidElement(token.getTagName())) {
+            token.setSelfClosing(true);
         }
-
-        flushTextBuffer();
-        if (tagToken.isEndToken()) {
-            handleEndTag(tagToken);
+        flushText();
+        if (token.isEndToken()) {
+            handleEnd(token);
         } else {
-            handleStartOrSelfClosingTag(tagToken);
+            handleStartOrSelfClosing(token);
         }
     }
 
-    public void onCommentToken(CommentToken commentToken) {
-        flushTextBuffer();
-
-        System.out.println("Comment token: " + commentToken.getData());
-
-        DomComment commentNode = new DomComment(commentToken.getData());
-        if (elementStack.isEmpty()) {
-            domDocument.addChild(commentNode);
-        } else {
-            elementStack.peek().addChild(commentNode);
-        }
+    public void onCommentToken(CommentToken token) {
+        flushText();
+        System.out.println(ParserConstants.COMMENT_LOG_PREFIX + token.getData());
+        DomComment commentNode = domNodeFactory.createDomComment(token.getData());
+        addNode(commentNode);
     }
 
-    public void onDoctypeToken(DoctypeToken doctypeToken) {
-        flushTextBuffer();
-
-        domDocument.setDoctype(
-                doctypeToken.getName(),
-                doctypeToken.getPublicIdentifier(),
-                doctypeToken.getSystemIdentifier()
-        );
-
-        System.out.println("Doctype token: " + doctypeToken.getName()
-                + ", publicId=" + doctypeToken.getPublicIdentifier()
-                + ", systemId=" + doctypeToken.getSystemIdentifier());
+    public void onDoctypeToken(DoctypeToken token) {
+        flushText();
+        document.setDoctype(token.getName(), token.getPublicIdentifier(), token.getSystemIdentifier());
+        System.out.println(ParserConstants.DOCTYPE_LOG_PREFIX + token.getName()
+                + PUBLIC_IDENTIFIER + token.getPublicIdentifier()
+                + SYSTEM_IDENTIFIER + token.getSystemIdentifier());
     }
 
-    /**
-     * Вызывается из токенайзера, когда достигнут конец файла (EOF).
-     */
-    public void onEndOfFileToken(EndOfFileToken endOfFileToken) {
-        flushTextBuffer();
-        System.out.println("Parsing finished (EOF).");
+    public void onEndOfFileToken(EndOfFileToken token) {
+        flushText();
+        System.out.println(ParserConstants.EOF_LOG);
     }
 
-    /**
-     * Обрабатываем открывающий/самозакрывающийся тег.
-     */
-    private void handleStartOrSelfClosingTag(TagToken tagToken) {
-        DomElement element = new DomElement(tagToken.getTagName());
-        copyAttributes(tagToken, element);
-
-        if (elementStack.isEmpty()) {
-            domDocument.addChild(element);
-        } else {
-            elementStack.peek().addChild(element);
-        }
-
-        if (!tagToken.isSelfClosing()) {
+    private void handleStartOrSelfClosing(TagToken token) {
+        DomElement element = domNodeFactory.createDomElement(token.getTagName());
+        copyAttrs(token, element);
+        addNode(element);
+        if (!token.isSelfClosing()) {
             elementStack.push(element);
         }
     }
 
-    /**
-     * Обрабатываем закрывающий тег
-     */
-    private void handleEndTag(TagToken tagToken) {
+    private void handleEnd(TagToken token) {
         if (elementStack.isEmpty()) {
             return;
         }
-
-        DomElement topElement = elementStack.peek();
-        if (topElement.getTagName().equalsIgnoreCase(tagToken.getTagName())) {
+        DomElement top = elementStack.peek();
+        if (top.getTagName().equalsIgnoreCase(token.getTagName())) {
             elementStack.pop();
         } else {
             elementStack.pop();
         }
     }
 
-    /**
-     * Сбрасываем накопленный в textBuffer текст, создаём DomText
-     */
-    private void flushTextBuffer() {
+    private void flushText() {
         if (textBuffer.isEmpty()) {
             return;
         }
         String text = textBuffer.toString();
         textBuffer.setLength(0);
-
         if (text.trim().isEmpty()) {
             return;
         }
-
-        DomText textNode = new DomText(text);
-        if (elementStack.isEmpty()) {
-            domDocument.addChild(textNode);
-        } else {
-            elementStack.peek().addChild(textNode);
-        }
+        DomText textNode = domNodeFactory.createDomText(text);
+        addNode(textNode);
     }
 
-    /**
-     * Копируем атрибуты из TagToken в DomElement, убирая пустые ключи и т. д.
-     */
-    private void copyAttributes(TagToken tagToken, DomElement element) {
-        Map<String, String> rawAttrs = tagToken.getAttributes();
+    private void copyAttrs(TagToken token, DomElement element) {
+        Map<String, String> rawAttrs = token.getAttributes();
         if (rawAttrs == null || rawAttrs.isEmpty()) {
             return;
         }
         Map<String, String> filtered = new HashMap<>();
         for (Map.Entry<String, String> e : rawAttrs.entrySet()) {
-            String name = e.getKey() != null ? e.getKey().trim() : "";
-            String value = e.getValue() != null ? e.getValue().trim() : "";
+            String name = (e.getKey() == null) ? EMPTY : e.getKey().trim();
+            String value = (e.getValue() == null) ? EMPTY : e.getValue().trim();
             if (!name.isEmpty()) {
                 filtered.put(name, value);
             }
         }
         element.setAttributes(filtered);
+    }
+
+    private void addNode(DomComment commentNode) {
+        if (elementStack.isEmpty()) {
+            document.addChild(commentNode);
+            return;
+        }
+        elementStack.peek().addChild(commentNode);
+    }
+
+    private void addNode(DomText textNode) {
+        if (elementStack.isEmpty()) {
+            document.addChild(textNode);
+            return;
+        }
+        elementStack.peek().addChild(textNode);
+    }
+
+    private void addNode(DomElement element) {
+        if (elementStack.isEmpty()) {
+            document.addChild(element);
+            return;
+        }
+        elementStack.peek().addChild(element);
     }
 }
