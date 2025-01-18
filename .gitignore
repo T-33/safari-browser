@@ -1,14 +1,17 @@
 # IntelliJ IDEA specific
- .idea/
- *.iml
- *.iws
- *.ipr
- out/
- .idea_modules/
+.idea/
+!.idea/modules.xml
+!.idea/vcs.xml
+!.idea/codeStyles/
+!.idea/runConfigurations/
+*.iws
+*.ipr
+out/
+.idea_modules/
 
- # Compiled files
- *.class
- target/
- build/
+# Compiled files
+*.class
+target/
+build/
 
 #Project#
