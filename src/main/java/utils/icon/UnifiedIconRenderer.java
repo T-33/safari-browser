@@ -34,10 +34,10 @@
 //            setForeground(Constants.DEFAULT_TABLE_FG);
 //        }
 //
-////        if (column == 0 && table.getModel() instanceof FileTableModel model) {
-////            File file = model.getFileAt(row);
-////            setIcon(getIconForFile(file));
-////        }
+//        if (column == 0 && table.getModel() instanceof FileTableModel model) {
+//            File file = model.getFileAt(row);
+//            setIcon(getIconForFile(file));
+//        }
 //
 //        return this;
 //    }
