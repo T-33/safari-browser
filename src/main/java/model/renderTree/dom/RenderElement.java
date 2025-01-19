@@ -12,8 +12,7 @@ public class RenderElement extends RenderNode {
         DomElement el = (DomElement) domNode;
         String disp = el.getDisplayProperty();
         System.out.println("Rendering Element: <" + el.getTagName() + "> display="
-                + disp + " at " + getX() + "," + getY()
-                + " size " + getWidth() + "x" + getHeight());
+                + disp);
         for (RenderNode child : children) {
             child.render();
         }
