@@ -40,7 +40,7 @@ public class DomElement extends DomNode {
     public String getDisplayProperty() {
         String disp = getStyleProperty(DISPLAY_STYLE);
         if (disp == null || disp.isBlank()) {
-            disp = BLOCK_STYLE;
+            disp = "inline";
         }
         return disp.toLowerCase();
     }

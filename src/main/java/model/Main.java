@@ -1,12 +1,28 @@
 package model;
 
+import model.baseproperties.BaseProperties;
+import model.cssParser.parser.CSSParser;
 import model.cssParser.parser.CSSParserFactory;
 import model.cssParser.parser.dom.CSSDomFactory;
+import model.cssParser.parser.dom.StyleSheet;
 import model.cssParser.tokenizer.CSSTokenFactory;
+import model.htmlParser.parser.Parser;
 import model.htmlParser.parser.ParserFactory;
+import model.htmlParser.parser.dom.DomDocument;
+import model.htmlParser.parser.dom.DomElement;
+import model.htmlParser.parser.dom.DomText;
+import model.layoutengine.LayoutEngine;
+import model.layoutengine.layoutboxes.LayoutBox;
+import model.layoutengine.layoutboxes.LayoutTextBox;
+import model.renderTree.RenderTreeBuilder;
 import model.renderTree.RenderTreeBuilderFactory;
 import model.renderTree.StyleResolver;
+import model.renderTree.dom.RenderNode;
 import model.renderTree.dom.RenderNodeFactory;
+import model.renderTree.dom.RenderText;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Main {
     public static void main(String[] args) {
@@ -37,13 +53,8 @@ public class Main {
                 """;
 
         String cssInput = """
-                html, body {
-                  margin: 0;
-                  padding: 0;
-                }
-                h1 {
-                  display: block;
-                  color: #333;
+                * {
+                    display: inline;
                 }
                 .myClass {
                   display: inline;
@@ -51,6 +62,53 @@ public class Main {
                 }
                 """;
 
-        engine.renderPage(htmlInput, cssInput);
+        Parser htmlParser = parserFactory.createParser(htmlInput);
+        DomDocument doc = htmlParser.getDomDocument();
+
+        CSSParser cssParser = cssParserFactory.createParser(cssInput);
+        StyleSheet styleSheet = cssParser.getStyleSheet();
+
+        StyleResolver.applyStyles(doc, styleSheet);
+
+        RenderTreeBuilder builder = builderFactory.createBuilder();
+        RenderNode root = builder.build(doc);
+
+//        if (root != null) {
+//            root.render();
+//        }
+
+        LayoutBox rootBox = LayoutEngine.buildLayoutTree(root);
+        rootBox.layout(null);
+
+        printRenderWithLayout(root, 1);
+
+
+        root.render();
+    }
+    private static void printRenderWithLayout( RenderNode root, int nestingLevel) {
+        if(root.getDomNode() instanceof DomElement domElement) {
+            String tagName = domElement.getTagName();
+            System.out.println("====================================");
+            System.out.println(tagName.toUpperCase());
+        }
+        printLayout(root.getLayoutBox(), nestingLevel);
+
+        for(RenderNode child : root.getChildren()) {
+            printRenderWithLayout(child, nestingLevel + 1);
+        }
+    }
+
+
+    private static void printLayout(LayoutBox box, int nestingLevel) {
+        System.out.print("\t".repeat(nestingLevel));
+        System.out.print(box);
+        if(box instanceof LayoutTextBox textBox) {
+            System.out.print(" TEXT " + textBox.getText());
+        }
+        System.out.println("\n");
+
+        for(LayoutBox childBox : box.getChildren()) {
+            printLayout(childBox, nestingLevel + 1);
+        }
     }
 }
