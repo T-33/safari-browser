@@ -28,6 +28,7 @@ public class Main {
     private static Engine engine;
     private static Network network;
     private static NavigationModel navigationModel;
+    private static EngineFactory engineFactory;
     private String currentUrl;
     private String rawHTML;
 
@@ -35,8 +36,8 @@ public class Main {
         this.canvas = canvas;
         this.network = new Network();
         this.navigationModel = new NavigationModel();
-        //todo
-//        this.engine = new Engine();
+        engineFactory = new EngineFactory();
+        this.engine = engineFactory.createEngine();
     }
 
 
