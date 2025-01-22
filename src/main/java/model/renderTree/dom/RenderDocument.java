@@ -10,9 +10,7 @@ public class RenderDocument extends RenderNode {
     @Override
     public void render() {
         System.out.println("Rendering Document (doctype="
-                + ((DomDocument) domNode).getDoctypeName() + ") at "
-                + getX() + "," + getY()
-                + " size " + getWidth() + "x" + getHeight());
+                + ((DomDocument) domNode).getDoctypeName() + ")");
         for (RenderNode child : children) {
             child.render();
         }

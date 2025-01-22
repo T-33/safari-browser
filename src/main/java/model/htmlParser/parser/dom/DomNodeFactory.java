@@ -1,6 +1,6 @@
 package model.htmlParser.parser.dom;
 
-public final class DomNodeFactory {
+public final class  DomNodeFactory {
 
     public DomComment createDomComment(String comment) {
         return new DomComment(comment);
