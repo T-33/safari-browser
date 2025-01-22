@@ -7,8 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Network {
-    private URL link;
-    private Map<String, String> headers = new HashMap<>();
+    private Map<String, String> headers;
+
+    public Network(){
+        this.headers = new HashMap<>();
+    }
 
     public String getPage(String urlString) throws Exception {
 
