@@ -43,6 +43,35 @@ public class Network {
         }
     }
 
+    public String getStyles(String urlString) throws Exception{
+        URL url = new URL(urlString);
+        String host = url.getHost();
+        int port = url.getPort() == -1 ? 80 : url.getPort();
+        try (Socket socket = new Socket(host, port);
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+
+            out.print("GET " + url.getPath() + " HTTP/1.1\r\n");
+            out.print("Host: " + host + "\r\n");
+            out.print("Connection: close\r\n");
+            out.print("\r\n");
+            out.flush();
+
+            StringBuilder response = new StringBuilder();
+            String inputLine;
+            boolean isBody = false;
+            while ((inputLine = in.readLine()) != null) {
+                if (isBody) {
+                    response.append(inputLine).append("\n");
+                }
+                if (inputLine.isEmpty()) {
+                    isBody = true;
+                }
+            }
+            return response.toString();
+        }
+    }
+
     public BufferedImage getImage(String urlString) throws Exception {
         URL url = new URL(urlString);
 

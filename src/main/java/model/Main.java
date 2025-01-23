@@ -30,6 +30,7 @@ public class Main {
     private static EngineFactory engineFactory;
     private String currentUrl;
     private String rawHTML;
+    private String rawCSS;
 
     public Main(Canvas canvas){
         this.canvas = canvas;
@@ -44,11 +45,13 @@ public class Main {
         currentUrl = canvas.getUrlField().getText();
 
         try { rawHTML = network.getPage(currentUrl);
+            rawCSS = network.getStyles(currentUrl);
         }
         catch (Exception e) { throw new RuntimeException(e);
         }
 
-        engine.renderPage(rawHTML, "сss");
+
+        engine.renderPage(rawHTML, rawCSS);
         //todo
         //layout
         //painting
