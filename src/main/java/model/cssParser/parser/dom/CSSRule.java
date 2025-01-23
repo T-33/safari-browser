@@ -10,7 +10,6 @@ public class CSSRule {
     public List<Selector> getSelectors() {
         return selectors;
     }
-
     public List<Declaration> getDeclarations() {
         return declarations;
     }

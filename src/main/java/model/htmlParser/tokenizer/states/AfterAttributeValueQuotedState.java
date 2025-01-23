@@ -21,9 +21,7 @@ public class AfterAttributeValueQuotedState implements TokenizerState {
         boolean isIgnored =
                 c == '\t' || c == '\r' || c == '\f' || c == '\n' || Character.isWhitespace(c);
 
-        if (tokenizer.isEndOfFile()) {
-            //todo
-        } else if (!isIgnored) {
+        if (!isIgnored) {
             tokenizer.getCurrentTagToken().startNewAttribute();
             tokenizer.setState(AttributeNameState.getInstance());
             tokenizer.reconsume();

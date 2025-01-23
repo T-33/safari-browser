@@ -19,14 +19,8 @@ public class CommentLessThanSignBangDashDashState implements TokenizerState {
 
     @Override
     public void handleChar(Tokenizer tokenizer, char c) {
-        if (c == '>' || tokenizer.isEndOfFile()) {
-            tokenizer.setState(CommentEndState.getInstance());
-            tokenizer.reconsume();
-        } else {
-            //todo should be nested comment parse error
-            tokenizer.setState(CommentEndState.getInstance());
-            tokenizer.reconsume();
-        }
+        tokenizer.setState(CommentEndState.getInstance());
+        tokenizer.reconsume();
     }
 }
 

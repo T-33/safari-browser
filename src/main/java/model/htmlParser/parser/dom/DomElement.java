@@ -8,7 +8,7 @@ public class DomElement extends DomNode {
     private Map<String, String> attributes;
     private final Map<String, String> computedStyle = new HashMap<>();
     public static final String DISPLAY_STYLE = "display";
-    public static final String BLOCK_STYLE = "block";
+    public static final String INLINE_STYLE = "inline";
 
     public DomElement(String tagName) {
         this.tagName = tagName;
@@ -40,7 +40,7 @@ public class DomElement extends DomNode {
     public String getDisplayProperty() {
         String disp = getStyleProperty(DISPLAY_STYLE);
         if (disp == null || disp.isBlank()) {
-            disp = "inline";
+            disp = INLINE_STYLE;
         }
         return disp.toLowerCase();
     }

@@ -76,16 +76,6 @@ public class Tokenizer {
     }
 
     /**
-     * Sets current tokenizer's input to specified input.
-     * Sets current position to 0.
-     * @param input
-     */
-    public void setInput(String input) {
-        this.input = input;
-        position = 0;
-    }
-
-    /**
      * Checks if document at current position starts with specified string, case-sensitive.
      *
      * <p>

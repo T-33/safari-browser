@@ -24,8 +24,6 @@ public class MarkupDeclarationOpenState implements TokenizerState {
             tokenizer.createCommentToken();
             tokenizer.setState(CommentStartState.getInstance());
         } else if (tokenizer.startsWithCaseInsensitive("doctype")) {
-            //consumes word "doctype"
-            // todo is this^^^^ comment useful^^^?
             for (int i = 0; i < "doctype".length(); i++) {
                 tokenizer.skipCharacter();
                 tokenizer.setState(DoctypeState.getInstance());
@@ -33,7 +31,6 @@ public class MarkupDeclarationOpenState implements TokenizerState {
         } else {
             tokenizer.createCommentToken();
             tokenizer.setState(BogusCommentState.getInstance());
-            //todo guide says not to consume anything
         }
     }
 }

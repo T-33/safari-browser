@@ -19,14 +19,7 @@ public class BeforeAttributeValueState implements TokenizerState {
 
     @Override
     public void handleChar(Tokenizer tokenizer, char c) {
-        boolean isIgnored =
-                c == '\t' || c == '\r' || c == '\f' || c == '\n' || Character.isWhitespace(c);
-
-        if (tokenizer.isEndOfFile()) {
-            //todo???????????????????????????????
-        } else if (isIgnored) {
-            return;
-        } else if (c == '\'') {
+        if (c == '\'') {
             tokenizer.setState(AttributeValueSingleQuotedState.getInstance());
         } else if (c == '\"') {
             tokenizer.setState(AttributeValueDoubleQuotedState.getInstance());

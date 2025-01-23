@@ -22,4 +22,3 @@ public class GenericActionListener implements ActionListener {
         action.run();
     }
 }
-// передаём в этот класс действие (через Runnable), которое нужно выполнить при нажатии кнопки.
