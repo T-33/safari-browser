@@ -1,5 +1,4 @@
 package model;
-
 import model.baseproperties.BaseProperties;
 import model.cssParser.parser.CSSParser;
 import model.cssParser.parser.CSSParserFactory;
@@ -19,12 +18,45 @@ import model.renderTree.RenderTreeBuilderFactory;
 import model.renderTree.StyleResolver;
 import model.renderTree.dom.RenderNode;
 import model.renderTree.dom.RenderNodeFactory;
+import view.Canvas;
 import model.renderTree.dom.RenderText;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Main {
+    private Canvas canvas;
+    private static Engine engine;
+    private static Network network;
+    private static NavigationModel navigationModel;
+    private static EngineFactory engineFactory;
+    private String currentUrl;
+    private String rawHTML;
+
+    public Main(Canvas canvas){
+        this.canvas = canvas;
+        this.network = new Network();
+        this.navigationModel = new NavigationModel();
+        engineFactory = new EngineFactory();
+        this.engine = engineFactory.createEngine();
+    }
+
+
+
+    public void loadPage(){
+        currentUrl = canvas.getUrlField().getText();
+
+        try {
+            rawHTML = network.getPage(currentUrl);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        //todo
+        //parser - render
+        //layout
+        //painting
+
+    }
     public static void main(String[] args) {
         ParserFactory parserFactory = new ParserFactory();
         CSSDomFactory cssDomFactory = new CSSDomFactory();
