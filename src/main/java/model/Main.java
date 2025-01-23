@@ -27,7 +27,6 @@ public class Main {
     private Canvas canvas;
     private static Engine engine;
     private static Network network;
-    private static NavigationModel navigationModel;
     private static EngineFactory engineFactory;
     private String currentUrl;
     private String rawHTML;
@@ -35,7 +34,6 @@ public class Main {
     public Main(Canvas canvas){
         this.canvas = canvas;
         this.network = new Network();
-        this.navigationModel = new NavigationModel();
         engineFactory = new EngineFactory();
         this.engine = engineFactory.createEngine();
     }
@@ -45,14 +43,13 @@ public class Main {
     public void loadPage(){
         currentUrl = canvas.getUrlField().getText();
 
-        try {
-            rawHTML = network.getPage(currentUrl);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        try { rawHTML = network.getPage(currentUrl);
+        }
+        catch (Exception e) { throw new RuntimeException(e);
         }
 
+        engine.renderPage(rawHTML, "сss");
         //todo
-        //parser - render
         //layout
         //painting
 
