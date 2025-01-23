@@ -5,6 +5,7 @@ import model.htmlParser.tokenizer.Tokenizer;
 public class AttributeValueSingleQuotedState implements TokenizerState {
 
     private static AttributeValueSingleQuotedState INSTANCE;
+    private static final String ATTRIBUTE_VALUE = "Appended attribute value c: ";
 
     private AttributeValueSingleQuotedState() {
     }
@@ -25,7 +26,7 @@ public class AttributeValueSingleQuotedState implements TokenizerState {
             tokenizer.setState(AfterAttributeValueState.getInstance());
         } else {
             tokenizer.getCurrentTagToken().appendAttributeValue(c);
-            System.out.println("Appended attribute value c: " + c);
+            System.out.println(ATTRIBUTE_VALUE + c);
         }
     }
 }

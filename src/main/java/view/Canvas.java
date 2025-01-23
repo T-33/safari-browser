@@ -3,25 +3,33 @@ package view;
 import controller.NavigationController;
 import custom.ActionButton;
 import custom.UrlField;
+import listeners.EnterKeyPredicate;
 import listeners.GenericKeyListeners;
+import listeners.SearchAction;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
+import java.util.function.Predicate;
 
 /**
  * Main panel containing the URL input field and action buttons.
  */
 public class Canvas extends JPanel {
+    private NavigationController navigationController;
+
     private final UrlField urlField;
     private final ActionButton searchButton;
     private final ActionButton undoButton;
     private final ActionButton redoButton;
-    private NavigationController navigationController;
+    private final Predicate<KeyEvent> enterKeyPredicate;
+    private final Runnable searchAction;
 
     public static final String SEARCH_BUTTON_TEXT = "Search";
     public static final String UNDO_BUTTON_TEXT = "Undo";
     public static final String REDO_BUTTON_TEXT = "Redo";
+
     /**
      * Initializes the canvas with a URL input field, undo/redo buttons, and a search button.
      */
@@ -31,6 +39,9 @@ public class Canvas extends JPanel {
         setLayout(new BorderLayout());
 
         JPanel urlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        this.enterKeyPredicate = new EnterKeyPredicate();
+        this.searchAction = new SearchAction(this);
 
         urlField = new UrlField();
         searchButton = new ActionButton(SEARCH_BUTTON_TEXT, this::search);
@@ -43,16 +54,13 @@ public class Canvas extends JPanel {
         urlPanel.add(searchButton);
         add(urlPanel, BorderLayout.NORTH);
 
-        urlField.addKeyListener(new GenericKeyListeners(
-                e -> e.getKeyCode() == KeyEvent.VK_ENTER,
-                this::search
-        ));
+        urlField.addKeyListener(new GenericKeyListeners(enterKeyPredicate, searchAction));
     }
 
     /**
      * Triggers the search action.
      */
-    private void search() {
+    public void search() {
         String url = urlField.getText();
         if (!url.isEmpty()) {
             navigationController.addUrl(url);
@@ -62,16 +70,17 @@ public class Canvas extends JPanel {
     /**
      * Performs the undo action, restoring the previous URL.
      */
-    private void undo() {
+    public void undo() {
         String previousUrl = navigationController.undo();
         if (previousUrl != null) {
             urlField.setText(previousUrl);
         }
     }
+
     /**
      * Performs the redo action, restoring the next URL.
      */
-    private void redo() {
+    public void redo() {
         String nextUrl = navigationController.redo();
         if (nextUrl != null) {
             urlField.setText(nextUrl);

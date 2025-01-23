@@ -1,16 +1,17 @@
 package view;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import java.awt.BorderLayout;
 
 public class MainView extends JFrame {
     private Canvas canvas;
 
     public static final int WIDTH = 1200;
     public static final int HEIGHT = 800;
+    public static final String TITLE = "Safari Browser";
 
     public MainView() {
-        super("Safari Browser");
+        super(TITLE);
         initializeUI();
     }
 

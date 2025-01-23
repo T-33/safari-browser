@@ -56,33 +56,11 @@ public class DoctypeToken {
     }
 
     /**
-     * Appends specified char to the end of public identifier.
-     * @param c - char that will be appended.
-     */
-    public void appendPublicIndentifier(char c) {
-        publicIdentifier.append(c);
-    }
-
-    /**
-     * Appends specified char to the end of system identifier.
-     * @param c - char that will be appended.
-     */
-    public void appendSystemIdentifier(char c) {
-        systemIdentifier.append(c);
-    }
-
-    /**
-     * @return true if force quirks flag is on.
-     */
-    public boolean isForceQuirksFlag() {
-        return forceQuirksFlag;
-    }
-
-    /**
      * Sets force quirks flag to on/off.
      * @param forceQuirksFlag - new flag value.
      */
     public void setForceQuirksFlag(boolean forceQuirksFlag) {
         this.forceQuirksFlag = forceQuirksFlag;
     }
+
 }

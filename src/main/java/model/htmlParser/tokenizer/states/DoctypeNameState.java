@@ -22,9 +22,6 @@ public class DoctypeNameState implements TokenizerState {
         boolean isAfterDoctypeName =
                 c == '\t' || c == '\r' || c == '\f' || c == '\n' || Character.isWhitespace(c);
 
-        boolean isAfterAttributeName =
-                tokenizer.isEndOfFile() || c == '/' || c == '>';
-
         boolean isAlphabeticUppercase = String.valueOf(c).matches("^[A-Z]+$");
 
         if (isAfterDoctypeName) {

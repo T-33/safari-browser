@@ -5,6 +5,7 @@ import model.htmlParser.parser.dom.DomDocument;
 import model.htmlParser.parser.dom.DomElement;
 import model.htmlParser.parser.dom.DomNode;
 import model.htmlParser.parser.dom.DomText;
+
 import model.renderTree.dom.RenderDocument;
 import model.renderTree.dom.RenderElement;
 import model.renderTree.dom.RenderNode;

@@ -31,7 +31,6 @@ public class AttributeNameState implements TokenizerState {
         } else if(c == '=') {
             tokenizer.setState(BeforeAttributeValueState.getInstance());
         } else if (isAlphabeticUppercase) {
-            //todo maybe find proper Character::method for uppercase chars
             tokenizer.getCurrentTagToken().appendAttributeName(Character.toLowerCase(c));
         } else {
             tokenizer.getCurrentTagToken().appendAttributeName(c);
