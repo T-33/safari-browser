@@ -1,4 +1,5 @@
 package model;
+
 import model.baseproperties.BaseProperties;
 import model.cssParser.parser.CSSParser;
 import model.cssParser.parser.CSSParserFactory;
@@ -20,8 +21,9 @@ import model.renderTree.dom.RenderNode;
 import model.renderTree.dom.RenderNodeFactory;
 import view.Canvas;
 import model.renderTree.dom.RenderText;
-import java.awt.*;
-import java.awt.image.BufferedImage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     private Canvas canvas;
@@ -75,18 +77,30 @@ public class Main {
                 <head>
                     <meta charset="UTF-8">
                     <title>Test Document</title>
+                    <span>Span Text</span>
+                    
                 </head>
                 <body>
                     <h1>Title H1</h1>
-                    <p>This is a <b>bold</b> text in a paragraph.</p>
+                    
+                    <p>This is a <b>bold bold</b> text in a paragraph.
+                    <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor 
+                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud 
+                    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure 
+                    dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+                     anim id est laborum.</span>
+                    
+                
+                    </p>
                     <div class="myClass">This is a div</div>
                 </body>
                 </html>
                 """;
 
         String cssInput = """
-                * {
-                    display: inline;
+                html, body, div, p, h1, h2, h3 {
+                    display: block;
                 }
                 .myClass {
                   display: inline;

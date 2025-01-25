@@ -8,8 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- * Used for storing individual words for proper line wrapping.
- * Or storing said words as children.
+ * Stores text.
  */
 public class LayoutTextBox extends LayoutBox{
     private String text;
@@ -20,13 +19,25 @@ public class LayoutTextBox extends LayoutBox{
     }
 
     /**
-     * Calculates blocks position and size.
+     * Doesn't layout, because it will be broken into lineBoxes by parent inline element
      * @param containingBox parent of box. If null, then
      */
     @Override
     public void layout(LayoutBox containingBox) {
         setHeight(calculateHeight());
         setWidth(calculateWidth());
+    }
+
+    /**
+     * Should look up font in associated CSS.
+     * Now return default font.
+     * @return
+     */
+    public Font getFont() {
+        String defaultFontName = BaseProperties.getBaseFontName();
+        int defaultFontSize = BaseProperties.getBaseFontSize();
+
+        return new Font(defaultFontName,  Font.PLAIN, defaultFontSize);
     }
 
     /**
@@ -38,16 +49,10 @@ public class LayoutTextBox extends LayoutBox{
         BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = img.createGraphics();
 
-        String defaultFontName = BaseProperties.getBaseFontName();
-        int defaultFontSize = BaseProperties.getBaseFontSize();
-
-        Font font = new Font(defaultFontName,  Font.PLAIN, defaultFontSize);
-//        g2.setFont(font);
+        g2.setFont(getFont());
 
         FontMetrics fontMetrics = g2.getFontMetrics();
         g2.dispose();
-
-        String text = getText();
 
         int textHeight = fontMetrics.getHeight();
 
@@ -57,26 +62,20 @@ public class LayoutTextBox extends LayoutBox{
     /**
      *  calculates width of string of text using default font name and font size
      * @see model.baseproperties.BaseProperties;
-      */
+     */
     private int calculateWidth() {
         //temporary buffered image object to access Graphics2D
         BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = img.createGraphics();
 
-        String defaultFontName = BaseProperties.getBaseFontName();
-        int defaultFontSize = BaseProperties.getBaseFontSize();
-
-        Font font = new Font(defaultFontName,  Font.PLAIN, defaultFontSize);
-        g2.setFont(font);
+        g2.setFont(getFont());
 
         FontMetrics fontMetrics = g2.getFontMetrics();
         g2.dispose();
 
-        String text = getText();
+        int textWidth = fontMetrics.stringWidth(getText());
 
-        int textLength = fontMetrics.stringWidth(text);
-
-        return textLength;
+        return textWidth;
     }
 
     public String getText() {

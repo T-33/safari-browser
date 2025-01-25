@@ -16,12 +16,13 @@ import model.renderTree.dom.RenderText;
 public class LayoutEngine {
     /**
      * creates layout tree without calculating coordinates and size of boxes.
-     *
+     * <p>
      * some chunks are not yet done. For example every child of inline element must be inline
      * and inline boxes that have block siblings should be put inside anonymous block container.
+     *
      * @param renderNode
      * @param displayProperty - either "block" or "inline", case-insensitive.
-     *                          if anything else then defaults to "inline"
+     *                        if anything else then defaults to "inline"
      * @return layout tree.
      */
     public static LayoutBox buildLayoutTree(RenderNode renderNode) {
@@ -31,11 +32,11 @@ public class LayoutEngine {
          * only RenderElement has display styles -> only RenderElement has display property.
          * @see model.renderTree.dom.RenderElement;
          */
-         boolean isBlock = true;
+        boolean isBlock = true;
 
         //questionable naming: renderNode and renderElement what is the difference?
-        if(renderNode.getDomNode() instanceof DomElement domElement) {
-            String displayProperty =  domElement.getDisplayProperty();
+        if (renderNode.getDomNode() instanceof DomElement domElement) {
+            String displayProperty = domElement.getDisplayProperty();
             isBlock = displayProperty.equals("block");
         }
 
@@ -76,3 +77,13 @@ public class LayoutEngine {
         return rootBox;
     }
 }
+//if(childNode instanceof RenderText renderTextElement) {
+//DomText domTextElement = (DomText) renderTextElement.getDomNode();
+//String text = domTextElement.getText();
+//
+//String[] words = text.split(" ");
+//                    for (String word : words) {
+//LayoutTextBox wordBox = new LayoutTextBox(word);
+//                        rootBox.getChildren().add(wordBox);
+//                    }
+//                            } else {
