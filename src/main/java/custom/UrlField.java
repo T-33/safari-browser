@@ -93,7 +93,7 @@ public class UrlField extends JComponent implements KeyListener {
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
         if (Character.isLetterOrDigit(c) || c == ' ' || Constants.ALLOWED_URL_CHARS.indexOf(c) != -1) {
-            text.append(c);
+            text.insert(caretPosition, c);
             caretPosition++;
             repaint();
         }
@@ -102,12 +102,17 @@ public class UrlField extends JComponent implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE && !text.isEmpty()) {
-            text.deleteCharAt(text.length() - 1);
-            caretPosition--;
+            text.deleteCharAt(--caretPosition);
             repaint();
         }
         else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
             pasteFromClipboard();
+        }
+        else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            if (caretPosition > 0) caretPosition--;
+        }
+        else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            if (caretPosition < text.length()) caretPosition++;
         }
     }
 
