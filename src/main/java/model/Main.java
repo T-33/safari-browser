@@ -12,6 +12,7 @@ import model.htmlParser.parser.dom.DomDocument;
 import model.htmlParser.parser.dom.DomElement;
 import model.htmlParser.parser.dom.DomText;
 import model.layoutengine.LayoutEngine;
+import model.layoutengine.layoutboxes.BoxType;
 import model.layoutengine.layoutboxes.LayoutBox;
 import model.layoutengine.layoutboxes.LayoutTextBox;
 import model.renderTree.RenderTreeBuilder;
@@ -19,46 +20,12 @@ import model.renderTree.RenderTreeBuilderFactory;
 import model.renderTree.StyleResolver;
 import model.renderTree.dom.RenderNode;
 import model.renderTree.dom.RenderNodeFactory;
-import view.Canvas;
 import model.renderTree.dom.RenderText;
-
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    private Canvas canvas;
-    private static Engine engine;
-    private static Network network;
-    private static EngineFactory engineFactory;
-    private String currentUrl;
-    private String rawHTML;
-    private String rawCSS;
-
-    public Main(Canvas canvas){
-        this.canvas = canvas;
-        this.network = new Network();
-        engineFactory = new EngineFactory();
-        this.engine = engineFactory.createEngine();
-    }
-
-
-
-    public void loadPage(){
-        currentUrl = canvas.getUrlField().getText();
-
-        try { rawHTML = network.getPage(currentUrl);
-            rawCSS = network.getStyles(currentUrl);
-        }
-        catch (Exception e) { throw new RuntimeException(e);
-        }
-
-
-        engine.renderPage(rawHTML, rawCSS);
-        //todo
-        //layout
-        //painting
-
-    }
     public static void main(String[] args) {
         ParserFactory parserFactory = new ParserFactory();
         CSSDomFactory cssDomFactory = new CSSDomFactory();
@@ -83,7 +50,7 @@ public class Main {
                 <body>
                     <h1>Title H1</h1>
                     
-                    <p>This is a <b>bold bold</b> text in a paragraph.
+                    <p>This is a <b>bold bold</b> text in a paragraph shitty.
                     <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor 
                     incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud 
                     exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure 
@@ -125,9 +92,7 @@ public class Main {
 
         LayoutBox rootBox = LayoutEngine.buildLayoutTree(root);
         rootBox.layout(null);
-
-        printRenderWithLayout(root, 1);
-
+        printLayout(rootBox, 0);
 
         root.render();
     }
@@ -156,5 +121,18 @@ public class Main {
         for(LayoutBox childBox : box.getChildren()) {
             printLayout(childBox, nestingLevel + 1);
         }
+    }
+
+    private static List<LayoutTextBox> extractText(LayoutBox layoutBox, List<LayoutTextBox> textList) {
+
+        if ( layoutBox instanceof  LayoutTextBox textBox) {
+            textList.add(textBox);
+        }
+
+        for(LayoutBox child : layoutBox.getChildren()) {
+            extractText(child, textList);
+        }
+
+        return textList;
     }
 }

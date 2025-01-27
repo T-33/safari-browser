@@ -19,6 +19,9 @@ public class LayoutBox {
     private List<LayoutBox> lineBoxes;
     private LayoutBox currentLine;
 
+    //sum of width of current line's children.
+    float currentLineWidth = 0;
+
     public LayoutBox(float x, float y, float width, float height, List<LayoutBox> children, BoxType boxType) {
         this.x = x;
         this.y = y;
@@ -58,7 +61,7 @@ public class LayoutBox {
 
         if (boxType == BoxType.BLOCK) {
             layoutBlock(containingBox);
-        } else if(boxType == BoxType.INLINE) {
+        } else if (boxType == BoxType.INLINE) {
 //            layoutInline(containingBox);
         } else {
             layoutLine(containingBox);
@@ -90,13 +93,14 @@ public class LayoutBox {
      * All children are supposed to be in line before layout.
      * Children must fit inside of line, that sum of their width is less or equal to line width;
      * Children in a line are laid out horizontally.
-     *
+     * <p>
      * Line children are always text nodes;
+     *
      * @param containingBox
      */
     public void layoutLine(LayoutBox containingBox) {
         float currentX = x;
-        for (LayoutBox child :  children) {
+        for (LayoutBox child : children) {
             child.layout(containingBox);
             child.setX(currentX);
             child.setY(y);
@@ -154,14 +158,11 @@ public class LayoutBox {
     public void layoutBlockChildren() {
         //increments with each new children to current line
         //used for lines of inline elements
-        float currentLineWidth = 0;
+        currentLineWidth = 0;
         for (LayoutBox child : children) {
-
-            child.layout(this);
-
-            if(child instanceof LayoutTextBox textBox) {
-                System.out.println("found child " + textBox.getText());
-                if(currentLine == null) {
+            if (child instanceof LayoutTextBox textBox) {
+                child.layout(this);
+                if (currentLine == null) {
                     currentLine = new LayoutBox(BoxType.LINE);
                     currentLine.setWidth(width);
                     currentLine.setY(y + height);
@@ -170,7 +171,7 @@ public class LayoutBox {
                 // assumed that inline elements contain only inline elements or text
 
 
-                if(currentLineWidth + child.getWidth() <= currentLine.getWidth()) {
+                if (currentLineWidth + child.getWidth() <= currentLine.getWidth()) {
                     currentLine.getChildren().add(child);
                     currentLineWidth += child.getWidth();
                 } else {
@@ -183,7 +184,7 @@ public class LayoutBox {
 
                     lineBoxes.add(currentLine);
                     currentLine = null;
-                    currentLineWidth = 0;
+                    currentLineWidth = child.getWidth();
 
                     //create new
                     currentLine = new LayoutBox(BoxType.LINE);
@@ -191,18 +192,26 @@ public class LayoutBox {
                     currentLine.setY(y + height);
                     currentLine.getChildren().add(child);
                 }
+            } else if (child.getBoxType() == BoxType.INLINE) {
+                layoutInlineBox(child);
+            } else {//BLOCK
+                //finalize currentLine after iteration over block box's children
+                if (currentLine != null) {
+                    currentLine.layout(this);
+                    height += currentLine.getHeight();
 
-            } else if(child.getBoxType() == BoxType.INLINE) {
-
-
-                //BLOCK
-            } else {
+                    lineBoxes.add(currentLine);
+                    currentLine = null;
+                    currentLineWidth = 0;
+                }
+                //block is laid out after last line's height is accounted for, otherwise it would overlap with last line.
+                child.layout(this);
                 height += child.getHeight();
             }
         }
 
-        //finalize currentLine after iteration over block children
-        if(currentLine != null) {
+        //finalize currentLine after iteration over block box's children
+        if (currentLine != null) {
             currentLine.layout(this);
             height += currentLine.getHeight();
 
@@ -213,105 +222,148 @@ public class LayoutBox {
 
     /**
      * Extracts text elements from inline element and lays them using lines;
+     *
      * @param inlineBox
      */
-    public void layoutInlineBox(LayoutBox inlineBox, float currentY) {
+    public void layoutInlineBox(LayoutBox inlineBox) {
+        List<LayoutTextBox> extractedTextElements = extractTextElements(inlineBox, new ArrayList<>());
 
-    }
+        for (LayoutBox child : extractedTextElements) {
+
+            child.layout(this);
+            if (currentLine == null) {
+                currentLine = new LayoutBox(BoxType.LINE);
+                currentLine.setWidth(width);
+                currentLine.setY(y + height);
+            }
+            //TODO FIX technically parent container doesn't impact layout
+            // assumed that inline elements contain only inline elements or text
 
 
-    private static List<LayoutTextBox> extractTextElements(LayoutBox layoutBox, List<LayoutTextBox> textList) {
+            if (currentLineWidth + child.getWidth() <= currentLine.getWidth()) {
+                currentLine.getChildren().add(child);
+                currentLineWidth += child.getWidth();
+            } else {
+                //finalize currentLine
 
-        if ( layoutBox instanceof  LayoutTextBox textBox) {
-            textList.add(textBox);
+                //TODO technically line box doesn't need parent element to layout
+                // FIX====Э
+                currentLine.layout(this);
+                height += currentLine.getHeight();
+
+                lineBoxes.add(currentLine);
+                currentLine = null;
+                currentLineWidth = child.getWidth();
+
+                //create new
+                currentLine = new LayoutBox(BoxType.LINE);
+                currentLine.setWidth(width);
+                currentLine.setY(y + height);
+                currentLine.getChildren().add(child);
+            }
         }
-
-        for(LayoutBox child : layoutBox.getChildren()) {
-            extractTextElements(child, textList);
-        }
-
-        return textList;
     }
 
 
     /**
-     * Intentionally left empty, because height property is set to auto by default. {@link LayoutBox::layout}
+     * Extracts all children of LayoutTextBox class from provided layoutBox.
+     * Searches depth-first.
+     * @param layoutBox
+     * @param textList
+     * @return
      */
-    public void calculateInlineHeight(LayoutBox containingBox) {
-        float maxChildHeight = 0;
-        for (LayoutBox child : children) {
-            if(child.getHeight() > maxChildHeight) {
-                maxChildHeight = child.getHeight();
-            }
-        }
-        height = maxChildHeight;
+    private static List<LayoutTextBox> extractTextElements(LayoutBox layoutBox, List<LayoutTextBox> textList) {
+
+    if (layoutBox instanceof LayoutTextBox textBox) {
+        textList.add(textBox);
     }
 
-    public void calculateInlinePosition(LayoutBox containingBox) {
-        final boolean isRoot = containingBox == null;
-
-        if (isRoot) {
-            x = 0;
-            y = 0;
-        } else {
-            x = containingBox.getX();
-            y = containingBox.getHeight() + containingBox.getY();
-        }
+    for (LayoutBox child : layoutBox.getChildren()) {
+        extractTextElements(child, textList);
     }
 
-    public void layoutInlineChildren() {
-        for (LayoutBox child : children) {
-            child.layout(this);
-            width += child.width;
+    return textList;
+}
+
+
+/**
+ * Intentionally left empty, because height property is set to auto by default. {@link LayoutBox::layout}
+ */
+public void calculateInlineHeight(LayoutBox containingBox) {
+    float maxChildHeight = 0;
+    for (LayoutBox child : children) {
+        if (child.getHeight() > maxChildHeight) {
+            maxChildHeight = child.getHeight();
         }
     }
+    height = maxChildHeight;
+}
 
-    public float getX() {
-        return x;
-    }
+public void calculateInlinePosition(LayoutBox containingBox) {
+    final boolean isRoot = containingBox == null;
 
-    public void setX(float x) {
-        this.x = x;
+    if (isRoot) {
+        x = 0;
+        y = 0;
+    } else {
+        x = containingBox.getX();
+        y = containingBox.getHeight() + containingBox.getY();
     }
+}
 
-    public float getY() {
-        return y;
+public void layoutInlineChildren() {
+    for (LayoutBox child : children) {
+        child.layout(this);
+        width += child.width;
     }
+}
 
-    public void setY(float y) {
-        this.y = y;
-    }
+public float getX() {
+    return x;
+}
 
-    public float getWidth() {
-        return width;
-    }
+public void setX(float x) {
+    this.x = x;
+}
 
-    public void setWidth(float width) {
-        this.width = width;
-    }
+public float getY() {
+    return y;
+}
 
-    public float getHeight() {
-        return height;
-    }
+public void setY(float y) {
+    this.y = y;
+}
 
-    public void setHeight(float height) {
-        this.height = height;
-    }
+public float getWidth() {
+    return width;
+}
 
-    public List<LayoutBox> getChildren() {
-        return children;
-    }
+public void setWidth(float width) {
+    this.width = width;
+}
 
-    public void setChildren(List<LayoutBox> children) {
-        this.children = new ArrayList<>(children);
-    }
+public float getHeight() {
+    return height;
+}
 
-    public BoxType getBoxType() {
-        return this.boxType;
-    }
+public void setHeight(float height) {
+    this.height = height;
+}
 
-    @Override
-    public String toString() {
-        return String.format("LayoutBox(x=%.1f, y=%.1f, width=%.1f, height=%.1f)", x, y, width, height) + boxType;
-    }
+public List<LayoutBox> getChildren() {
+    return children;
+}
+
+public void setChildren(List<LayoutBox> children) {
+    this.children = new ArrayList<>(children);
+}
+
+public BoxType getBoxType() {
+    return this.boxType;
+}
+
+@Override
+public String toString() {
+    return String.format("LayoutBox(x=%.1f, y=%.1f, width=%.1f, height=%.1f)", x, y, width, height) + boxType;
+}
 }

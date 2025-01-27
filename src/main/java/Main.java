@@ -7,6 +7,7 @@ public class Main {
         NavigationModel model = new NavigationModel();
         NavigationController controller = new NavigationController(model);
         MainView mainView = new MainView();
+        //TODO оставить mainview только
         mainView.getCanvas().setNavigationController(controller);
     }
 }
