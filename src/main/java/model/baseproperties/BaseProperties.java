@@ -5,8 +5,6 @@ public class BaseProperties {
     private static String DEFAULT_FONT = "SansSerif";
     private static PageRenderArea pageRenderArea = new PageRenderArea(0, 0, 1800, 1200);
 
-    //TODO удалить  (не удалять. Я сам вспомню зачем и удалю)^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
     /**
      * Non-instantiable.
      */

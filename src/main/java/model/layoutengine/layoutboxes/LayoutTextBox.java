@@ -1,14 +1,14 @@
 package model.layoutengine.layoutboxes;
 
 import model.baseproperties.BaseProperties;
-import model.htmlParser.parser.dom.DomText;
-import model.renderTree.dom.RenderText;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- * Stores text.
+ * LayoutBox that stores text.
+ * It is assumed that text box contains individual words,
+ * otherwise text would not be wrapped to new line correctly.
  */
 public class LayoutTextBox extends LayoutBox{
     private String text;
@@ -20,7 +20,7 @@ public class LayoutTextBox extends LayoutBox{
 
     /**
      * Doesn't layout, because it will be broken into lineBoxes by parent inline element
-     * @param containingBox parent of box. If null, then
+     * @param containingBox not needed, will be needed as layout becomes more complex.
      */
     @Override
     public void layout(LayoutBox containingBox) {
@@ -30,8 +30,9 @@ public class LayoutTextBox extends LayoutBox{
 
     /**
      * Should look up font in associated CSS.
-     * Now return default font.
-     * @return
+     * Now returns default font.
+     * @see model.baseproperties.BaseProperties;
+     * @return font of text box;
      */
     public Font getFont() {
         String defaultFontName = BaseProperties.getBaseFontName();
@@ -41,7 +42,7 @@ public class LayoutTextBox extends LayoutBox{
     }
 
     /**
-     *  calculates height of string of text using default font name and font size
+     *  Calculates height of string of text using font.
      * @see model.baseproperties.BaseProperties;
      */
     private int calculateHeight() {
@@ -60,8 +61,7 @@ public class LayoutTextBox extends LayoutBox{
     }
 
     /**
-     *  calculates width of string of text using default font name and font size
-     * @see model.baseproperties.BaseProperties;
+     * Calculates width of string of text using font.
      */
     private int calculateWidth() {
         //temporary buffered image object to access Graphics2D
