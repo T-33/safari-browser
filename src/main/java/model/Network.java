@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Network {
+    private URL url;
     private Map<String, String> headers;
 
     public Network(){
@@ -14,8 +15,14 @@ public class Network {
     }
 
     public String getPage(String urlString) throws Exception {
-
-        URL url = new URL(urlString);
+        if (urlString.startsWith("http")) {
+            url = new URL(urlString);
+        } else if(urlString.contains(".")) {
+            url = new URL("https://" + urlString);
+        }else{
+            url = new URL(getGoogleReq(urlString));
+        }
+        System.out.println(url);
         String host = url.getHost();
         int port = url.getPort() == -1 ? 80 : url.getPort();
         try (Socket socket = new Socket(host, port);
@@ -41,6 +48,11 @@ public class Network {
             System.out.println(response);
             return response.toString();
         }
+    }
+
+    public String getGoogleReq(String urlString){
+//        TODO create request to google
+        return urlString;
     }
 
     public String getStyles(String urlString) throws Exception{
