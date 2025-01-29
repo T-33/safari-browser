@@ -1,5 +1,8 @@
 package view;
 
+import controller.NavigationController;
+import model.NavigationModel;
+
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 
@@ -12,7 +15,12 @@ public class MainView extends JFrame {
 
     public MainView() {
         super(TITLE);
+
+        NavigationModel model = new NavigationModel();
+        NavigationController controller = new NavigationController(model);
+
         initializeUI();
+        canvas.setNavigationController(controller);
     }
 
     private void initializeUI() {
