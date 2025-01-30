@@ -59,6 +59,10 @@ public final class StyleResolver {
                     }
                 }
             }
+            if (classAttr == null || classAttr.isEmpty()) {
+                return false;
+            }
+
         }
         return false;
     }

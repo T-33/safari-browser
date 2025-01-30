@@ -5,54 +5,27 @@ package model.baseproperties;
  * @see model.CustomCanvas
  */
 public class PageRenderArea {
-    private int x;
-    private int y;
-    private int width;
-    private int height;
+    private static int x;
+    private static int y;
+    private static int width;
+    private final int height;
 
     public PageRenderArea(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
+        PageRenderArea.x = x;
+        PageRenderArea.y = y;
+        PageRenderArea.width = width;
         this.height = height;
     }
 
-    /**
-     * By default, each field is zero.
-     */
-    public PageRenderArea() {
-        this(0, 0, 0, 0);
-    }
-
-    public int getX() {
+    public static int getX() {
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
+    public static int getY() {
         return y;
     }
 
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getWidth() {
+    public static int getWidth() {
         return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 }

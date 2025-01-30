@@ -1,6 +1,6 @@
 package model.cssParser.parser.dom;
 
-public class CSSDomFactory {
+public class CSSOMFactory {
     public StyleSheet createStyleSheet() {
         return new StyleSheet();
     }

@@ -6,10 +6,7 @@ import model.htmlParser.parser.dom.DomElement;
 import model.htmlParser.parser.dom.DomNode;
 import model.htmlParser.parser.dom.DomText;
 
-import model.renderTree.dom.RenderDocument;
-import model.renderTree.dom.RenderElement;
-import model.renderTree.dom.RenderNode;
-import model.renderTree.dom.RenderNodeFactory;
+import model.renderTree.dom.*;
 
 public final class RenderTreeBuilder {
     private final RenderNodeFactory factory;
@@ -43,6 +40,8 @@ public final class RenderTreeBuilder {
             return renderEl;
         }
         if (node instanceof DomText text) {
+            RenderText renderText = factory.createRenderText(text);
+            renderText.setDomNode(node.getParent());
             return factory.createRenderText(text);
         }
         if (node instanceof DomComment comment) {

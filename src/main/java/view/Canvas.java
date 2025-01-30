@@ -7,9 +7,8 @@ import listeners.EnterKeyPredicate;
 import listeners.GenericKeyListeners;
 import listeners.SearchAction;
 
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.function.Predicate;
 
@@ -89,13 +88,5 @@ public class Canvas extends JPanel {
 
     public void setNavigationController(NavigationController navigationController) {
         this.navigationController = navigationController;
-    }
-
-    public UrlField getUrlField() {
-        return urlField;
-    }
-
-    public ActionButton getSearchButton() {
-        return searchButton;
     }
 }

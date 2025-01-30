@@ -23,8 +23,6 @@ public class Parser {
     private final StringBuilder textBuffer;
     private final DomNodeFactory domNodeFactory;
 
-    private static final String PUBLIC_IDENTIFIER = ", publicId=";
-    private static final String SYSTEM_IDENTIFIER = ", systemId=";
     private static final String EMPTY = "";
 
     public Parser(String input) {
@@ -58,7 +56,6 @@ public class Parser {
 
     public void onCommentToken(CommentToken token) {
         flushText();
-        System.out.println(ParserConstants.COMMENT_LOG_PREFIX + token.getData());
         DomComment commentNode = domNodeFactory.createDomComment(token.getData());
         addNode(commentNode);
     }
@@ -66,14 +63,10 @@ public class Parser {
     public void onDoctypeToken(DoctypeToken token) {
         flushText();
         document.setDoctype(token.getName(), token.getPublicIdentifier(), token.getSystemIdentifier());
-        System.out.println(ParserConstants.DOCTYPE_LOG_PREFIX + token.getName()
-                + PUBLIC_IDENTIFIER + token.getPublicIdentifier()
-                + SYSTEM_IDENTIFIER + token.getSystemIdentifier());
     }
 
     public void onEndOfFileToken(EndOfFileToken token) {
         flushText();
-        System.out.println(ParserConstants.EOF_LOG);
     }
 
     private void handleStartOrSelfClosing(TagToken token) {
@@ -107,7 +100,12 @@ public class Parser {
             return;
         }
         DomText textNode = domNodeFactory.createDomText(text);
-        addNode(textNode);
+
+        if (!elementStack.isEmpty()) {
+            elementStack.peek().addChild(textNode);
+        } else {
+            document.addChild(textNode);
+        }
     }
 
     private void copyAttrs(TagToken token, DomElement element) {
@@ -132,14 +130,6 @@ public class Parser {
             return;
         }
         elementStack.peek().addChild(commentNode);
-    }
-
-    private void addNode(DomText textNode) {
-        if (elementStack.isEmpty()) {
-            document.addChild(textNode);
-            return;
-        }
-        elementStack.peek().addChild(textNode);
     }
 
     private void addNode(DomElement element) {

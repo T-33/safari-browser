@@ -1,21 +1,19 @@
 package model.Network;
+import javax.imageio.ImageIO;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Network {
-    private URL url;
-    private static final int timeLimit = 10000;
+    private static final int TIMEOUT = 10000;
     private static final int MAX_REDIRECTS = 5;
-
-
 
     public Network(){}
     public HttpResponse getPage(String urlString) {
-        System.out.println(urlString);
         for (int i = 0; i < MAX_REDIRECTS; i++) {
             try {
                 URL url = urlString.startsWith("http") ? new URL(urlString) :
@@ -30,7 +28,7 @@ public class Network {
 
                 try (SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(host, port)) {
                     sslSocket.startHandshake();
-                    sslSocket.setSoTimeout(timeLimit);
+                    sslSocket.setSoTimeout(TIMEOUT);
                     sslSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
 
                     Request(sslSocket, host, path);
@@ -58,7 +56,6 @@ public class Network {
             }
         }
 
-        System.out.println("Превышен лимит редиректов (" + MAX_REDIRECTS + "). Возвращаем последний доступный ответ.");
         return null;
     }
 
@@ -139,6 +136,33 @@ public class Network {
         return cssResult.toString();
     }
 
+    public BufferedImage getImage(String imageUrl) {
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            return null;
+        }
+
+        try {
+            URL url = new URL(imageUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(TIMEOUT);
+            connection.setReadTimeout(TIMEOUT);
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                return null;
+            }
+
+            BufferedImage image = ImageIO.read(connection.getInputStream());
+            connection.disconnect();
+
+            return image;
+
+        } catch (IOException e) {
+            return null;
+        }
+    }
 
     public String getGoogleReq(String urlString){
         try {

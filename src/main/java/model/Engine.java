@@ -6,10 +6,15 @@ import model.htmlParser.parser.ParserFactory;
 import model.htmlParser.parser.dom.DomDocument;
 import model.cssParser.parser.dom.StyleSheet;
 import model.cssParser.parser.CSSParser;
+import model.layoutengine.LayoutEngine;
+import model.layoutengine.layoutboxes.LayoutBox;
 import model.renderTree.RenderTreeBuilder;
 import model.renderTree.RenderTreeBuilderFactory;
 import model.renderTree.StyleResolver;
 import model.renderTree.dom.RenderNode;
+
+import javax.swing.*;
+import java.awt.*;
 
 public final class Engine {
     private final ParserFactory parserFactory;
@@ -41,8 +46,17 @@ public final class Engine {
         RenderTreeBuilder builder = builderFactory.createBuilder();
         RenderNode root = builder.build(doc);
 
-        if (root != null) {
-            root.render();
-        }
+        LayoutBox rootBox = LayoutEngine.buildLayoutTree(root);
+        rootBox.layout(null);
+
+        root.render();
+        CustomCanvas canvas = new CustomCanvas(rootBox);
+
+        JFrame frame = new JFrame("Canvas");
+        frame.setLayout(new BorderLayout());
+        frame.add(canvas);
+        frame.setSize(1800, 1200);
+        frame.setVisible(true);
     }
+
 }

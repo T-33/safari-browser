@@ -2,8 +2,10 @@ package model.layoutengine.layoutboxes;
 
 import model.baseproperties.BaseProperties;
 import model.baseproperties.PageRenderArea;
+import model.renderTree.dom.RenderNode;
 
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -16,11 +18,13 @@ public class LayoutBox {
     private final Rectangle contentArea;
     private final List<LayoutBox> children;
     private final BoxType boxType;
+    private RenderNode renderNode;
+    private BufferedImage image;
 
     /**
      * Block elements process inline elements using lineBoxes;
      */
-    private List<LayoutBox> lineBoxes;
+    private final List<LayoutBox> lineBoxes;
     private LineBox currentLine;
 
     public LayoutBox(int x, int y, int width, int height, List<LayoutBox> children, BoxType boxType) {
@@ -99,11 +103,10 @@ public class LayoutBox {
      */
     public void calculateBlockPosition(LayoutBox containingBox) {
         final boolean isRoot = containingBox == null;
-        final PageRenderArea pageRenderArea = BaseProperties.getPageRenderArea();
 
         if (isRoot) {
-            setX(pageRenderArea.getX());
-            setY(pageRenderArea.getY());
+            setX(PageRenderArea.getX());
+            setY(PageRenderArea.getY());
         } else {
             setX(containingBox.getX());
             setY(containingBox.getHeight() + containingBox.getY());
@@ -136,7 +139,6 @@ public class LayoutBox {
                 layoutInlineBox(child);
             } else if (child.getBoxType() == BoxType.BLOCK){
                 finalizeCurrentLine();
-                //block is laid out after last line's height is accounted for, otherwise it would overlap with last line.
                 child.layout(this);
 
                 setHeight(getHeight() + child.getHeight());
@@ -214,6 +216,18 @@ public class LayoutBox {
         }
 
         return textList;
+    }
+
+    public RenderNode getRenderNode() {
+        return renderNode;
+    }
+
+    public void setRenderNode(RenderNode renderNode) {
+        this.renderNode = renderNode;
+    }
+
+    public void setImage(BufferedImage img) {
+        this.image = img;
     }
 
     public int getX() {
