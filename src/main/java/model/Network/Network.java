@@ -141,8 +141,13 @@ public class Network {
 
 
     public String getGoogleReq(String urlString){
-//        TODO create request to google
-        return urlString;
+        try {
+            String encodedQuery = URLEncoder.encode(urlString, "UTF-8");
+            return "https://www.google.com/search?q=" + encodedQuery;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
