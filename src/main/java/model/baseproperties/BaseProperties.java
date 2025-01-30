@@ -3,9 +3,7 @@ package model.baseproperties;
 public class BaseProperties {
     private static int BASE_FONT_SIZE = 16;
     private static String DEFAULT_FONT = "SansSerif";
-    private static PageRenderArea pageRenderArea = new PageRenderArea(0, 0, 800, 600);
-
-    //TODO удалить ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    private static PageRenderArea pageRenderArea = new PageRenderArea(0, 0, 1800, 1200);
 
     /**
      * Non-instantiable.

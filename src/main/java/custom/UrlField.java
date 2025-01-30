@@ -1,8 +1,19 @@
 package custom;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.datatransfer.*;
+import javax.swing.JComponent;
+import javax.swing.Timer;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.RoundRectangle2D;
@@ -14,12 +25,17 @@ import java.io.IOException;
 public class UrlField extends JComponent implements KeyListener {
     private StringBuilder text;
     private boolean focused = false;
+    private boolean showCaret = false;
+    private Timer caretTimer;
+    private int caretPosition = 0;
 
     public UrlField() {
         text = new StringBuilder();
         setPreferredSize(new Dimension(Constants.URL_FIELD_WIDTH, Constants.URL_FIELD_HEIGHT));
         addKeyListener(this);
         setFocusable(true);
+        caretTimer = new Timer(500, this::blinkCaret);
+        caretTimer.start();
     }
 
     @Override
@@ -55,13 +71,30 @@ public class UrlField extends JComponent implements KeyListener {
                 Constants.URL_FIELD_ARC_SIZE,
                 Constants.URL_FIELD_ARC_SIZE
         ));
+
+        if (focused && showCaret) {
+            int caretX = 5;
+            if (caretPosition > 0) {
+                caretX += g2d.getFontMetrics().stringWidth(text.substring(0, caretPosition));
+            }
+            g2d.drawLine(caretX, 5, caretX, getHeight() - 5);
+        }
+
+    }
+
+    private void blinkCaret(ActionEvent e) {
+        if (focused) {
+            showCaret = !showCaret;
+            repaint();
+        }
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
         if (Character.isLetterOrDigit(c) || c == ' ' || Constants.ALLOWED_URL_CHARS.indexOf(c) != -1) {
-            text.append(c);
+            text.insert(caretPosition, c);
+            caretPosition++;
             repaint();
         }
     }
@@ -69,11 +102,17 @@ public class UrlField extends JComponent implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE && !text.isEmpty()) {
-            text.deleteCharAt(text.length() - 1);
+            text.deleteCharAt(--caretPosition);
             repaint();
         }
         else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
             pasteFromClipboard();
+        }
+        else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            if (caretPosition > 0) caretPosition--;
+        }
+        else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            if (caretPosition < text.length()) caretPosition++;
         }
     }
 
@@ -83,6 +122,7 @@ public class UrlField extends JComponent implements KeyListener {
             String clipboardText = (String) clipboard.getData(DataFlavor.stringFlavor);
             if (clipboardText != null) {
                 text.append(clipboardText);
+                caretPosition += clipboardText.length();
                 repaint();
             }
         } catch (UnsupportedFlavorException | IOException ex) {
