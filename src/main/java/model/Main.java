@@ -21,6 +21,9 @@ import model.renderTree.StyleResolver;
 import model.renderTree.dom.RenderNode;
 import model.renderTree.dom.RenderNodeFactory;
 import model.renderTree.dom.RenderText;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,34 +42,20 @@ public class Main {
         Engine engine = new Engine(parserFactory, cssParserFactory, builderFactory, styleResolver);
 
         String htmlInput = """
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Test Document</title>
-                    <span>Span Text</span>
-                    
-                </head>
                 <body>
                     <h1>Title H1</h1>
                     
                     <p>This is a <b>bold bold</b> text in a paragraph shitty.
-                    <span>Lorem ipsum dolor sit amet,<p>BLOCK IN INLINE</p> consectetur adipiscing elit. Sed do eiusmod tempor 
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud 
-                    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure 
-                    dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                     anim id est laborum.</span>
-                    
-                
+                    <img width="100" height="100" src="cool.png">
+                    <img width="100" height="100" src="cool.png">
+                    <img width="100" height="100" src="cool.png">
                     </p>
-                    <div class="myClass">This is a div</div>
+                    
                 </body>
-                </html>
                 """;
 
         String cssInput = """
-                html, body, div, p, h1, h2, h3 {
+                html, body, div, p, h1, h2, h3, img {
                     display: block;
                 }
                 .myClass {
@@ -95,6 +84,14 @@ public class Main {
         printLayout(rootBox, 0);
 
         root.render();
+        CustomCanvas canvas = new CustomCanvas(rootBox);
+
+        JFrame frame = new JFrame("Canvas");
+        frame.setLayout(new BorderLayout());
+        frame.add(canvas);
+        frame.setSize(1800, 1200);
+        frame.setVisible(true);
+
     }
     private static void printRenderWithLayout( RenderNode root, int nestingLevel) {
         if(root.getDomNode() instanceof DomElement domElement) {

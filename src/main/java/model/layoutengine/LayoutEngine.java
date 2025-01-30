@@ -42,6 +42,20 @@ public class LayoutEngine {
             rootBox = new LayoutBox(isBlock ? BoxType.BLOCK : BoxType.INLINE);
         }
 
+
+        if (renderNode.getDomNode() instanceof DomElement domElement) {
+            final boolean isImageTag = domElement.getTagName().equals("img");
+
+            if(isImageTag) {
+                final int heightAttributeValue = Integer.parseInt(domElement.getAttributes().get("height"));
+                final int widthAttributeValue = Integer.parseInt(domElement.getAttributes().get("width"));
+                rootBox.setHeight(heightAttributeValue);
+                rootBox.setWidth(widthAttributeValue);
+                //image element doesn't have children, so there is no need to iterate over them.
+                return rootBox;
+            }
+        }
+
         /**
          * If we are dealing with RenderText then there is no need to loop through its children, because it has none.
          * We need to create LayoutTextBox for each individual word of the text for proper line wrapping.
