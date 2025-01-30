@@ -68,7 +68,7 @@ public class LayoutBox {
 
     /**
      * Block element takes up its parent's width or render area width.
-     *
+     * Unless size was specified during layout tree construction(in our case only for image elements).
      * @param containingBox
      */
     public void calculateBlockWidth(LayoutBox containingBox) {
@@ -78,7 +78,9 @@ public class LayoutBox {
             final int renderAreaWidth = BaseProperties.getPageRenderArea().getWidth();
             setWidth(renderAreaWidth);
         } else {
-            setWidth(containingBox.getWidth());
+            if(getWidth() == 0) {
+                setWidth(containingBox.getWidth());
+            }
         }
     }
 
@@ -137,7 +139,7 @@ public class LayoutBox {
                 //block is laid out after last line's height is accounted for, otherwise it would overlap with last line.
                 child.layout(this);
 
-                setHeight(child.getHeight());
+                setHeight(getHeight() + child.getHeight());
             }
         }
         finalizeCurrentLine();

@@ -1,4 +1,13 @@
 package model;
+import model.renderTree.dom.RenderText;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+import model.Network.HttpResponse;
+import model.Network.Network;
+
 
 import model.baseproperties.BaseProperties;
 import model.cssParser.parser.CSSParser;
@@ -10,7 +19,6 @@ import model.htmlParser.parser.Parser;
 import model.htmlParser.parser.ParserFactory;
 import model.htmlParser.parser.dom.DomDocument;
 import model.htmlParser.parser.dom.DomElement;
-import model.htmlParser.parser.dom.DomText;
 import model.layoutengine.LayoutEngine;
 import model.layoutengine.layoutboxes.BoxType;
 import model.layoutengine.layoutboxes.LayoutBox;
@@ -20,12 +28,41 @@ import model.renderTree.RenderTreeBuilderFactory;
 import model.renderTree.StyleResolver;
 import model.renderTree.dom.RenderNode;
 import model.renderTree.dom.RenderNodeFactory;
-import model.renderTree.dom.RenderText;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
+import view.Canvas;
 
 public class Main {
+    private Canvas canvas;
+    private static Engine engine;
+    private static Network network;
+    private static EngineFactory engineFactory;
+    private static HttpResponse httpResponse;
+    private String currentUrl;
+    private String rawHTML;
+    private String rawCSS;
+
+    public Main(Canvas canvas){
+        this.canvas = canvas;
+        this.network = new Network();
+        engineFactory = new EngineFactory();
+        this.engine = engineFactory.createEngine();
+    }
+
+
+
+    public void loadPage(){
+        currentUrl = canvas.getUrlField().getText();
+        httpResponse = network.getPage(currentUrl);
+        rawHTML = httpResponse.getHtml();
+        rawCSS = httpResponse.getCss();
+
+
+        engine.renderPage(rawHTML, rawCSS);
+        //todo
+        //layout
+        //painting
+
+    }
+
     public static void main(String[] args) {
         ParserFactory parserFactory = new ParserFactory();
         CSSDomFactory cssDomFactory = new CSSDomFactory();
@@ -39,34 +76,20 @@ public class Main {
         Engine engine = new Engine(parserFactory, cssParserFactory, builderFactory, styleResolver);
 
         String htmlInput = """
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Test Document</title>
-                    <span>Span Text</span>
-                    
-                </head>
                 <body>
                     <h1>Title H1</h1>
                     
                     <p>This is a <b>bold bold</b> text in a paragraph shitty.
-                    <span>Lorem ipsum dolor sit amet,<p>BLOCK IN INLINE</p> consectetur adipiscing elit. Sed do eiusmod tempor 
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud 
-                    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure 
-                    dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                     anim id est laborum.</span>
-                    
-                
+                    <img width="100" height="100" src="cool.png">
+                    <img width="100" height="100" src="cool.png">
+                    <img width="100" height="100" src="cool.png">
                     </p>
-                    <div class="myClass">This is a div</div>
+                    
                 </body>
-                </html>
                 """;
 
         String cssInput = """
-                html, body, div, p, h1, h2, h3 {
+                html, body, div, p, h1, h2, h3, img {
                     display: block;
                 }
                 .myClass {
@@ -95,6 +118,14 @@ public class Main {
         printLayout(rootBox, 0);
 
         root.render();
+        CustomCanvas canvas = new CustomCanvas(rootBox);
+
+        JFrame frame = new JFrame("Canvas");
+        frame.setLayout(new BorderLayout());
+        frame.add(canvas);
+        frame.setSize(1800, 1200);
+        frame.setVisible(true);
+
     }
     private static void printRenderWithLayout( RenderNode root, int nestingLevel) {
         if(root.getDomNode() instanceof DomElement domElement) {
