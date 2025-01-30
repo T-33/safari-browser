@@ -5,23 +5,31 @@ import javax.net.ssl.SSLSocketFactory;
 import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Network {
     private static final int TIMEOUT = 10000;
     private static final int MAX_REDIRECTS = 5;
+    private static List<URL> redirectedPages;
+
 
     public Network(){}
     public HttpResponse getPage(String urlString) {
+        HttpResponse lastResponse = null;
+        redirectedPages = new ArrayList<>();
         for (int i = 0; i < MAX_REDIRECTS; i++) {
             try {
                 URL url = urlString.startsWith("http") ? new URL(urlString) :
                         urlString.contains(".") ? new URL("https://" + urlString) :
                                 new URL(getGoogleReq(urlString));
-
+                redirectedPages.add(url);
                 String host = url.getHost();
                 String path = url.getPath().isEmpty() ? "/" : url.getPath();
+                String baseUrl = url.getProtocol() + "://" + url.getHost();
+
                 int port = url.getProtocol().equalsIgnoreCase("https") ? 443 : 80;
 
                 SSLSocketFactory sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
@@ -33,30 +41,35 @@ public class Network {
 
                     Request(sslSocket, host, path);
                     HttpResponse response = readHttpResponse(sslSocket, url);
+                    lastResponse = response;
 
                     int statusCode = response.getStatusCode();
 
-                    if (statusCode == 301 || statusCode == 302 || statusCode == 303) {
+                    if ((statusCode == 301 || statusCode == 302 || statusCode == 303)) {
                         String newLocation = response.getHeaders().get("Location");
                         if (newLocation != null) {
-                            urlString = newLocation;
-                            continue;
+                            if (newLocation.startsWith("https://")) {
+                                urlString = newLocation;
+                            } else {
+                                urlString = baseUrl + (newLocation.startsWith("/") ? newLocation : "/" + newLocation);
+                            }
                         }
+                    }
+                    if (urlString.equals("https://www.google.com/webhp") || redirectedPages.contains(new URL(urlString))) {
+                        return lastResponse;
                     }
 
                     if (statusCode == 200) {
                         return response;
                     }
-
-                    return response;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return null;
             }
         }
 
-        return null;
+        System.out.println("Превышен лимит редиректов (" + MAX_REDIRECTS + "). Возвращаем последний доступный ответ.");
+        return lastResponse;
     }
 
 
