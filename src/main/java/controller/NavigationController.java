@@ -22,8 +22,7 @@ public class NavigationController {
     }
 
     public void addUrl(String url) {
-        model.fetchHtml(url);
-        model.fetchStyles(url);
+        model.renderPage(url);
         navigationModel.addUrl(url);
         System.out.println(CURRENT_URL + navigationModel.getCurrentUrl());
     }

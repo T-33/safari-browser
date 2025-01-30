@@ -13,9 +13,9 @@ import view.Canvas;
 
 public class Main {
     private final Canvas canvas;
-    private static Engine engine;
-    private static Network network;
-    private static EngineFactory engineFactory;
+    private final Engine engine;
+    private final Network network;
+//    private final EngineFactory engineFactory;
 
     public Main(Canvas canvas){
         this.canvas = canvas;
@@ -80,6 +80,6 @@ public class Main {
             }
         """;
 
-       engine.renderPage(htmlInput, cssInput);
+//       engine.renderPage(htmlInput, cssInput);
     }
 }
