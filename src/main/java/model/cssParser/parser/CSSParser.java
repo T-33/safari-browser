@@ -1,6 +1,6 @@
 package model.cssParser.parser;
 
-import model.cssParser.parser.dom.CSSDomFactory;
+import model.cssParser.parser.dom.CSSOMFactory;
 import model.cssParser.parser.dom.StyleSheet;
 import model.cssParser.parser.dom.CSSRule;
 import model.cssParser.parser.dom.Declaration;
@@ -14,14 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class CSSParser {
-    private final CSSDomFactory domFactory;
+    private final CSSOMFactory domFactory;
     private final CSSTokenFactory tokenFactory;
     private final String input;
     private List<CSSToken> tokens;
     private int currentIndex = 0;
     private StyleSheet styleSheet;
 
-    public CSSParser(String cssInput, CSSDomFactory domFactory, CSSTokenFactory tokenFactory) {
+    public CSSParser(String cssInput, CSSOMFactory domFactory, CSSTokenFactory tokenFactory) {
         this.input = (cssInput == null) ? "" : cssInput;
         this.domFactory = domFactory;
         this.tokenFactory = tokenFactory;

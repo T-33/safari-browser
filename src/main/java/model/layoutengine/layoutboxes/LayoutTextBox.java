@@ -1,6 +1,7 @@
 package model.layoutengine.layoutboxes;
 
 import model.baseproperties.BaseProperties;
+import model.htmlParser.parser.dom.DomElement;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -11,11 +12,13 @@ import java.awt.image.BufferedImage;
  * otherwise text would not be wrapped to new line correctly.
  */
 public class LayoutTextBox extends LayoutBox{
-    private String text;
+    private final String text;
+    private final DomElement associatedElement;
 
-    public LayoutTextBox(String text) {
+    public LayoutTextBox(String text, DomElement associatedElement) {
         super(BoxType.INLINE);
         this.text = text;
+        this.associatedElement = associatedElement;
     }
 
     /**
@@ -46,7 +49,6 @@ public class LayoutTextBox extends LayoutBox{
      * @see model.baseproperties.BaseProperties;
      */
     private int calculateHeight() {
-        //temporary buffered image object to access Graphics2D
         BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = img.createGraphics();
 
@@ -55,16 +57,13 @@ public class LayoutTextBox extends LayoutBox{
         FontMetrics fontMetrics = g2.getFontMetrics();
         g2.dispose();
 
-        int textHeight = fontMetrics.getHeight();
-
-        return textHeight;
+        return fontMetrics.getHeight();
     }
 
     /**
      * Calculates width of string of text using font.
      */
     private int calculateWidth() {
-        //temporary buffered image object to access Graphics2D
         BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = img.createGraphics();
 
@@ -73,12 +72,11 @@ public class LayoutTextBox extends LayoutBox{
         FontMetrics fontMetrics = g2.getFontMetrics();
         g2.dispose();
 
-        int textWidth = fontMetrics.stringWidth(getText());
-
-        return textWidth;
+        return fontMetrics.stringWidth(getText());
     }
 
     public String getText() {
         return text;
     }
+
 }

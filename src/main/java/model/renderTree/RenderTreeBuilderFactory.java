@@ -8,7 +8,6 @@ public class RenderTreeBuilderFactory {
     public RenderTreeBuilderFactory(RenderNodeFactory factory) {
         this.renderNodeFactory = factory;
     }
-
     public RenderTreeBuilder createBuilder() {
         return new RenderTreeBuilder(renderNodeFactory);
     }

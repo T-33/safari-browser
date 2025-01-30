@@ -16,7 +16,6 @@ public class LineBox extends LayoutBox {
      * Children in a line are laid out horizontally.
      * <p>
      * Line children are always text nodes;
-     *
      * On current level of layout's complexity doesn't need parent box to layout, will need in the future(most probably).
      *
      */
@@ -45,7 +44,6 @@ public class LineBox extends LayoutBox {
      * @return
      */
     public float sumOfChildrenWidth() {
-        //make sure each child is laid out.
         layoutChildren();
 
         float sum = 0;

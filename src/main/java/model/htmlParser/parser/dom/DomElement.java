@@ -1,5 +1,6 @@
 package model.htmlParser.parser.dom;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ public class DomElement extends DomNode {
     private final Map<String, String> computedStyle = new HashMap<>();
     public static final String DISPLAY_STYLE = "display";
     public static final String INLINE_STYLE = "inline";
+    public static final String IMG = "img";
 
     public DomElement(String tagName) {
         this.tagName = tagName;
@@ -21,6 +23,10 @@ public class DomElement extends DomNode {
 
     public Map<String, String> getAttributes() {
         return attributes;
+    }
+
+    public String getAttribute(String name) {
+        return attributes.get(name);
     }
 
     public void setAttributes(Map<String, String> attributes) {
@@ -43,5 +49,13 @@ public class DomElement extends DomNode {
             disp = INLINE_STYLE;
         }
         return disp.toLowerCase();
+    }
+
+    public Map<String, String> getComputedStyle() {
+        return Collections.unmodifiableMap(computedStyle);
+    }
+
+    public boolean isImage() {
+        return IMG.equalsIgnoreCase(tagName);
     }
 }

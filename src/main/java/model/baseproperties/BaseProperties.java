@@ -1,9 +1,9 @@
 package model.baseproperties;
 
 public class BaseProperties {
-    private static int BASE_FONT_SIZE = 16;
-    private static String DEFAULT_FONT = "SansSerif";
-    private static PageRenderArea pageRenderArea = new PageRenderArea(0, 0, 1800, 1200);
+    private static final int BASE_FONT_SIZE = 16;
+    private static final String DEFAULT_FONT = "SansSerif";
+    private static final PageRenderArea pageRenderArea = new PageRenderArea(0, 0, 1800, 1200);
 
     /**
      * Non-instantiable.
@@ -20,13 +20,5 @@ public class BaseProperties {
 
     public static PageRenderArea getPageRenderArea() {
         return pageRenderArea;
-    }
-
-    public static void setBaseFontSize(int newBaseFontSize) {
-        BASE_FONT_SIZE = newBaseFontSize;
-    }
-
-    public static void setDefaultFont(String defaultFont) {
-        DEFAULT_FONT = defaultFont;
     }
 }

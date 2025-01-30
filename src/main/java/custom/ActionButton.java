@@ -40,7 +40,7 @@ public class ActionButton extends JComponent implements MouseListener {
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int arcSize = Constants.ARC_SIZE;
+        int arcSize = Constants.BORDER_RADIUS;
 
         g2d.setColor(pressed ? Color.GRAY : hovered ? Color.LIGHT_GRAY : Color.WHITE);
         g2d.fill(new RoundRectangle2D.Float(Constants.RECTANGLE_X, Constants.RECTANGLE_Y, getWidth(), getHeight(), arcSize, arcSize));
@@ -91,7 +91,7 @@ public class ActionButton extends JComponent implements MouseListener {
         final static int BUTTON_WIDTH = 50;
         final static int BUTTON_HEIGHT = 30;
 
-        final static int ARC_SIZE = 15;
+        final static int BORDER_RADIUS = 15;
         final static int RECTANGLE_X = 0;
         final static int RECTANGLE_Y = 0;
 

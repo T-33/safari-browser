@@ -1,5 +1,6 @@
 package model.layoutengine;
 
+import model.Model;
 import model.htmlParser.parser.dom.DomElement;
 import model.htmlParser.parser.dom.DomText;
 import model.layoutengine.layoutboxes.BoxType;
@@ -8,6 +9,8 @@ import model.layoutengine.layoutboxes.LayoutTextBox;
 import model.renderTree.dom.RenderNode;
 import model.renderTree.dom.RenderText;
 
+import java.awt.image.BufferedImage;
+
 /**
  * Build tree of layout boxes for render tree, and assigns each render tree element its separate box.
  * RenderText text is divided into words for line-wrapping purposes.
@@ -15,6 +18,9 @@ import model.renderTree.dom.RenderText;
  * Technically all elements inside inline elements are laid out as inline elements so this problem can be considered solved.
  */
 public class LayoutEngine {
+
+    private static final Model model = Model.getInstance();
+
     /**
      * creates layout tree without calculating coordinates and size of boxes.
      *
@@ -23,59 +29,67 @@ public class LayoutEngine {
      * @see model.renderTree.dom.RenderElement;
      */
     public static LayoutBox buildLayoutTree(RenderNode renderNode) {
-
         boolean isBlock = true;
 
         if (renderNode.getDomNode() instanceof DomElement domElement) {
             String displayProperty = domElement.getDisplayProperty();
             isBlock = displayProperty.equals("block");
+
+            if (domElement.isImage()) {
+                LayoutBox imageBox = new LayoutBox(BoxType.BLOCK);
+
+                String src = domElement.getAttribute("src");
+                if (src == null || src.isEmpty()) {
+                    imageBox.setRenderNode(renderNode);
+                    return imageBox;
+                }
+
+                BufferedImage image = model.fetchImage(src);
+
+                if (image != null) {
+                    imageBox.setImage(image);
+
+                    String widthAttr = domElement.getAttribute("width");
+                    String heightAttr = domElement.getAttribute("height");
+
+                    if (widthAttr != null && heightAttr != null) {
+                        int width = Integer.parseInt(widthAttr);
+                        int height = Integer.parseInt(heightAttr);
+                        imageBox.setWidth(width);
+                        imageBox.setHeight(height);
+                    } else {
+                        imageBox.setWidth(image.getWidth());
+                        imageBox.setHeight(image.getHeight());
+                    }
+
+                    imageBox.setRenderNode(renderNode);
+                    return imageBox;
+                }
+            }
         }
 
         LayoutBox rootBox;
 
         if (renderNode instanceof RenderText textNode) {
             DomText domTextElement = (DomText) textNode.getDomNode();
-            String text = domTextElement.getText();
+            DomElement parentElement = null;
 
-            rootBox = new LayoutTextBox(text);
+            if (domTextElement.getParent() instanceof DomElement element) {
+                parentElement = element;
+            }
+
+            rootBox = new LayoutTextBox(domTextElement.getText(), parentElement);
         } else {
             rootBox = new LayoutBox(isBlock ? BoxType.BLOCK : BoxType.INLINE);
         }
 
+        rootBox.setRenderNode(renderNode);
 
-        if (renderNode.getDomNode() instanceof DomElement domElement) {
-            final boolean isImageTag = domElement.getTagName().equals("img");
-
-            if(isImageTag) {
-                final int heightAttributeValue = Integer.parseInt(domElement.getAttributes().get("height"));
-                final int widthAttributeValue = Integer.parseInt(domElement.getAttributes().get("width"));
-                rootBox.setHeight(heightAttributeValue);
-                rootBox.setWidth(widthAttributeValue);
-                //image element doesn't have children, so there is no need to iterate over them.
-                return rootBox;
-            }
-        }
-
-        /**
-         * If we are dealing with RenderText then there is no need to loop through its children, because it has none.
-         * We need to create LayoutTextBox for each individual word of the text for proper line wrapping.
-         */
         for (RenderNode childNode : renderNode.getChildren()) {
-            if (childNode instanceof RenderText renderTextElement) {
-                DomText domTextElement = (DomText) renderTextElement.getDomNode();
-                String text = domTextElement.getText();
-
-                String[] words = text.split(" ");
-                for (String word : words) {
-                    LayoutTextBox wordBox = new LayoutTextBox(word);
-                    rootBox.getChildren().add(wordBox);
-                }
-            } else {
-                rootBox.getChildren().add(buildLayoutTree(childNode));
-            }
+            rootBox.getChildren().add(buildLayoutTree(childNode));
         }
-        renderNode.setLayoutBox(rootBox);
 
+        renderNode.setLayoutBox(rootBox);
         return rootBox;
     }
 }

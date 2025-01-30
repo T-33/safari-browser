@@ -1,6 +1,7 @@
 package view;
 
 import controller.NavigationController;
+import model.Model;
 import model.NavigationModel;
 
 import javax.swing.JFrame;
@@ -16,8 +17,9 @@ public class MainView extends JFrame {
     public MainView() {
         super(TITLE);
 
-        NavigationModel model = new NavigationModel();
-        NavigationController controller = new NavigationController(model);
+        NavigationModel navModel = new NavigationModel();
+        Model model = Model.getInstance();
+        NavigationController controller = new NavigationController(navModel, model);
 
         initializeUI();
         canvas.setNavigationController(controller);
@@ -32,9 +34,5 @@ public class MainView extends JFrame {
         add(canvas, BorderLayout.CENTER);
 
         setVisible(true);
-    }
-
-    public Canvas getCanvas() {
-        return canvas;
     }
 }

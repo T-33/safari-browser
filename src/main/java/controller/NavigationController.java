@@ -1,5 +1,6 @@
 package controller;
 
+import model.Model;
 import model.NavigationModel;
 
 /**
@@ -7,6 +8,7 @@ import model.NavigationModel;
  */
 public class NavigationController {
     private final NavigationModel navigationModel;
+    private final Model model;
 
     public static final String CURRENT_URL = "Current URL: ";
     public static final String UNDO = "Undo: ";
@@ -14,11 +16,14 @@ public class NavigationController {
     public static final String UNDO_TEXT = "Nothing to undo.";
     public static final String REDO_TEXT = "Nothing to redo.";
 
-    public NavigationController(NavigationModel navigationModel) {
+    public NavigationController(NavigationModel navigationModel, Model model) {
         this.navigationModel = navigationModel;
+        this.model = model;
     }
 
     public void addUrl(String url) {
+        model.fetchHtml(url);
+        model.fetchStyles(url);
         navigationModel.addUrl(url);
         System.out.println(CURRENT_URL + navigationModel.getCurrentUrl());
     }
