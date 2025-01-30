@@ -1,5 +1,6 @@
 package model;
-import model.baseproperties.BaseProperties;
+import model.Network.HttpResponse;
+import model.Network.Network;
 import model.cssParser.parser.CSSParser;
 import model.cssParser.parser.CSSParserFactory;
 import model.cssParser.parser.dom.CSSDomFactory;
@@ -9,7 +10,6 @@ import model.htmlParser.parser.Parser;
 import model.htmlParser.parser.ParserFactory;
 import model.htmlParser.parser.dom.DomDocument;
 import model.htmlParser.parser.dom.DomElement;
-import model.htmlParser.parser.dom.DomText;
 import model.layoutengine.LayoutEngine;
 import model.layoutengine.layoutboxes.LayoutBox;
 import model.layoutengine.layoutboxes.LayoutTextBox;
@@ -19,15 +19,13 @@ import model.renderTree.StyleResolver;
 import model.renderTree.dom.RenderNode;
 import model.renderTree.dom.RenderNodeFactory;
 import view.Canvas;
-import model.renderTree.dom.RenderText;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class Main {
     private Canvas canvas;
     private static Engine engine;
     private static Network network;
     private static EngineFactory engineFactory;
+    private static HttpResponse httpResponse;
     private String currentUrl;
     private String rawHTML;
     private String rawCSS;
@@ -43,12 +41,9 @@ public class Main {
 
     public void loadPage(){
         currentUrl = canvas.getUrlField().getText();
-
-        try { rawHTML = network.getPage(currentUrl);
-            rawCSS = network.getStyles(currentUrl);
-        }
-        catch (Exception e) { throw new RuntimeException(e);
-        }
+        httpResponse = network.getPage(currentUrl);
+        rawHTML = httpResponse.getHtml();
+        rawCSS = httpResponse.getCss();
 
 
         engine.renderPage(rawHTML, rawCSS);
