@@ -19,6 +19,19 @@ public final class RenderTreeBuilder {
         if (node == null) {
             return null;
         }
+
+        if (node instanceof DomElement el) {
+            // Игнорируем узлы <head> и их содержимое
+            if ("head".equalsIgnoreCase(el.getTagName())) {
+                return null;
+            }
+
+            // Игнорируем <img>, если родитель — <head>
+            if ("img".equalsIgnoreCase(el.getTagName()) && isInsideHead(el)) {
+                return null;
+            }
+        }
+
         if (node instanceof DomDocument doc) {
             RenderDocument renderDoc = factory.createRenderDocument(doc);
             doc.getChildren().forEach(child -> {
@@ -31,6 +44,7 @@ public final class RenderTreeBuilder {
         }
         if (node instanceof DomElement el) {
             RenderElement renderEl = factory.createRenderElement(el);
+
             el.getChildren().forEach(child -> {
                 RenderNode childNode = build(child);
                 if (childNode != null) {
@@ -48,5 +62,17 @@ public final class RenderTreeBuilder {
             return factory.createRenderComment(comment);
         }
         return null;
+    }
+
+    private boolean isInsideHead(DomNode node) {
+        DomNode parent = node.getParent();
+        while (parent != null) {
+            if (parent instanceof DomElement parentEl
+                    && "head".equalsIgnoreCase(parentEl.getTagName())) {
+                return true;
+            }
+            parent = parent.getParent();
+        }
+        return false;
     }
 }

@@ -24,7 +24,6 @@ public class LayoutEngine {
     /**
      * creates layout tree without calculating coordinates and size of boxes.
      *
-     * @param renderNode
      * @return layout tree.
      * @see model.renderTree.dom.RenderElement;
      */
@@ -94,11 +93,6 @@ public class LayoutEngine {
         }
 
         renderNode.setLayoutBox(rootBox);
-        return rootBox;
-    }
-
-    public LayoutBox createLayout(String html, String css) {
-        LayoutBox rootBox = new LayoutBox(0, 0, 800, 600, null, BoxType.BLOCK);
         return rootBox;
     }
 }

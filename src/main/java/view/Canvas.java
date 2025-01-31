@@ -414,7 +414,6 @@ public class Canvas extends JPanel {
         public static final float DEFAULT_OPACITY = 1.0f;
         public static final int TEXT_VERTICAL_OFFSET = 5;
 
-        public static final String TAG_A = "a";
         public static final String ATTR_HREF = "href";
 
         public static final String STYLE_BACKGROUND_COLOR = "background-color";
@@ -426,12 +425,8 @@ public class Canvas extends JPanel {
         public static final String STYLE_FONT_SIZE = "font-size";
         public static final String STYLE_FONT_WEIGHT = "font-weight";
         public static final String STYLE_FONT_STYLE = "font-style";
-        public static final String STYLE_TEXT_ALIGN = "text-align";
         public static final String FONT_STYLE_BOLD = "bold";
         public static final String FONT_STYLE_ITALIC = "italic";
-
-        public static final String ALIGN_CENTER = "center";
-        public static final String ALIGN_RIGHT = "right";
 
         public static final String TAG_IMG = "img";
         public static final String ATTR_SRC = "src";

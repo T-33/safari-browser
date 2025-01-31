@@ -6,8 +6,4 @@ public class DomComment extends DomNode {
     public DomComment(String comment) {
         this.comment = comment;
     }
-
-    public String getComment() {
-        return comment;
-    }
 }

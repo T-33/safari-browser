@@ -10,16 +10,4 @@ public class DomDocument extends DomNode {
         publicId = pubId;
         systemId = sysId;
     }
-
-    public String getDoctypeName() {
-        return doctypeName;
-    }
-
-    public String getPublicId() {
-        return publicId;
-    }
-
-    public String getSystemId() {
-        return systemId;
-    }
 }
