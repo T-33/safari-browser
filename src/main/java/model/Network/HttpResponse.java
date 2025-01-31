@@ -35,8 +35,5 @@ public class HttpResponse {
         return html;
     }
 
-    public URL getUrl() {
-        return url;
-    }
 }
 

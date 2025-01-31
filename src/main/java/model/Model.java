@@ -21,7 +21,7 @@ public class Model {
 
     public String fetchHtml(String url) {
         try {
-            return network.getPage(url).getHtml();
+            return network.getResponse(url).getHtml();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -30,7 +30,7 @@ public class Model {
 
     public String fetchStyles(String cssUrl) {
         try {
-            return network.getPage(cssUrl).getCss();
+            return network.getResponse(cssUrl).getCss();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

@@ -17,7 +17,7 @@ public class Network {
 
 
     public Network(){}
-    public HttpResponse getPage(String urlString) {
+    public HttpResponse getResponse(String urlString) {
         HttpResponse lastResponse = null;
         redirectedPages = new ArrayList<>();
         for (int i = 0; i < MAX_REDIRECTS; i++) {
@@ -28,7 +28,7 @@ public class Network {
                 redirectedPages.add(url);
                 String host = url.getHost();
                 String path = url.getPath().isEmpty() ? "/" : url.getPath();
-                String baseUrl = url.getProtocol() + "://" + url.getHost();
+                String baseUrl = url.getProtocol() + "://" + host;
 
                 int port = url.getProtocol().equalsIgnoreCase("https") ? 443 : 80;
 
@@ -39,7 +39,7 @@ public class Network {
                     sslSocket.setSoTimeout(TIMEOUT);
                     sslSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
 
-                    Request(sslSocket, host, path);
+                    makeRequest(sslSocket, host, path);
                     HttpResponse response = readHttpResponse(sslSocket, url);
                     lastResponse = response;
 
@@ -68,20 +68,10 @@ public class Network {
             }
         }
 
-        System.out.println("Превышен лимит редиректов (" + MAX_REDIRECTS + "). Возвращаем последний доступный ответ.");
+        System.out.println("Limit of redirects" + MAX_REDIRECTS);
         return lastResponse;
     }
 
-
-
-    private void Request(SSLSocket sslSocket, String host, String path) throws IOException {
-        PrintWriter writer = new PrintWriter(sslSocket.getOutputStream(), true);
-        writer.println("GET " + path + " HTTP/1.1");
-        writer.println("Host: " + host);
-        writer.println("Connection: close");
-        writer.println("User-Agent: JavaClient/1.0");
-        writer.println();
-    }
 
     private HttpResponse readHttpResponse(SSLSocket sslSocket, URL baseUrl) throws IOException {
 
@@ -133,7 +123,7 @@ public class Network {
                                 ? cssPath
                                 : baseUrl.getProtocol() + "://" + baseUrl.getHost() +
                                 (cssPath.startsWith("/") ? cssPath : "/" + cssPath);
-                        HttpResponse cssResponse = getPage(cssUrl);
+                        HttpResponse cssResponse = getResponse(cssUrl);
                         if (cssResponse != null) {
                             String cssContent = cssResponse.getHtml();
                             if (cssContent != null) {
@@ -175,6 +165,15 @@ public class Network {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    private void makeRequest(SSLSocket sslSocket, String host, String path) throws IOException {
+        PrintWriter writer = new PrintWriter(sslSocket.getOutputStream(), true);
+        writer.println("Host: " + host);
+        writer.println("GET " + path + " HTTP/1.1");
+        writer.println("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+        writer.println("Connection: close");
+        writer.println();
     }
 
     public String getGoogleReq(String urlString){
