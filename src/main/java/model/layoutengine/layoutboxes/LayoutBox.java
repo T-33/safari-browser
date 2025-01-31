@@ -79,7 +79,7 @@ public class LayoutBox {
         final boolean isRoot = containingBox == null;
 
         if (isRoot) {
-            final int renderAreaWidth = BaseProperties.getPageRenderArea().getWidth();
+            final int renderAreaWidth = PageRenderArea.getWidth();
             setWidth(renderAreaWidth);
         } else {
             if(getWidth() == 0) {

@@ -3,9 +3,11 @@ package view;
 import controller.NavigationController;
 import model.Model;
 import model.NavigationModel;
+import model.baseproperties.BaseProperties;
+import model.baseproperties.PageRenderArea;
 
-import javax.swing.JFrame;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 public class MainView extends JFrame {
     private Canvas canvas;
@@ -23,6 +25,13 @@ public class MainView extends JFrame {
 
         initializeUI();
         canvas.setNavigationController(controller);
+
+        model.setCanvas(canvas);
+
+        final int scrollBarWidth = 20;
+
+        PageRenderArea.setWidth(WIDTH - scrollBarWidth);
+        PageRenderArea.setHeight(HEIGHT);
     }
 
     private void initializeUI() {
@@ -31,8 +40,10 @@ public class MainView extends JFrame {
         setLayout(new BorderLayout());
 
         canvas = new Canvas();
-        add(canvas, BorderLayout.CENTER);
+        canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
+        JScrollPane scrollPane = new JScrollPane(canvas);
+        add(scrollPane, BorderLayout.CENTER);
         setVisible(true);
     }
 }

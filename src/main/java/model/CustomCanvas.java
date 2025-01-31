@@ -18,12 +18,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CustomCanvas extends JComponent {
-    private final LayoutBox rootLayout;
+    private LayoutBox rootLayout;
     private final Map<Rectangle, String> clickableLinks = new HashMap<>();
 
     public CustomCanvas(LayoutBox layoutBox) {
-        this.rootLayout = layoutBox;
-
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -31,6 +29,11 @@ public class CustomCanvas extends JComponent {
                 setCursor(overLink ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
             }
         });
+    }
+
+    public void drawPage(LayoutBox rootLayout) {
+        this.rootLayout = rootLayout;
+        repaint();
     }
 
     private void drawLayout(Graphics2D g2d, LayoutBox layoutBox) {

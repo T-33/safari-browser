@@ -1,5 +1,6 @@
 package model;
 
+import model.baseproperties.PageRenderArea;
 import model.cssParser.parser.CSSParserFactory;
 import model.htmlParser.parser.Parser;
 import model.htmlParser.parser.ParserFactory;
@@ -34,7 +35,7 @@ public final class Engine {
         this.styleResolver = styleResolver;
     }
 
-    public void renderPage(String htmlInput, String cssInput) {
+    public void renderPage(String htmlInput, String cssInput, view.Canvas canvas) {
         Parser htmlParser = parserFactory.createParser(htmlInput);
         DomDocument doc = htmlParser.getDomDocument();
 
@@ -50,13 +51,9 @@ public final class Engine {
         rootBox.layout(null);
 
         root.render();
-        CustomCanvas canvas = new CustomCanvas(rootBox);
+        System.out.println("I happened");
+        System.out.println(PageRenderArea.getWidth() + " " +  PageRenderArea.getHeight());
 
-        JFrame frame = new JFrame("Canvas");
-        frame.setLayout(new BorderLayout());
-        frame.add(canvas);
-        frame.setSize(1800, 1200);
-        frame.setVisible(true);
+        canvas.drawPage(rootBox);
     }
-
 }
