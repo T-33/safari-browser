@@ -5,7 +5,6 @@ import javax.net.ssl.SSLSocketFactory;
 import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,9 @@ public class Network {
             String host = url.getHost();
             int port = url.getProtocol().equalsIgnoreCase("https") ? 443 : 80;
             String path = url.getPath().isEmpty() ? "/" : url.getPath();
+            if (url.getQuery() != null) {
+                path += "?" + url.getQuery();
+            }
             SSLSocketFactory sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
             for (int i = 0; i < MAX_REDIRECTS; i++) {
@@ -45,7 +47,7 @@ public class Network {
                     if (response.getStatusCode() == 301 || response.getStatusCode() == 302 || response.getStatusCode() == 303) {
                         String newLocation = response.getHeaders().get("Location");
                         System.out.println(newLocation);
-                        if (newLocation.equals("https://www.google.com/webhp")){
+                        if (newLocation != null && newLocation.startsWith("https://www.google.com")) {
                             return response;
                         }
                         url = new URL(url, newLocation);
@@ -79,14 +81,15 @@ public class Network {
 
         Map<String, String> headers = new HashMap<>();
         String line;
-        while ((line = reader.readLine()) != null && !line.isEmpty()) {
+        while ((line = reader.readLine()) != null) {
+            if (line.trim().isEmpty()) {
+                break;
+            }
             int colonIndex = line.indexOf(":");
             if (colonIndex > 0) {
                 String headerName = line.substring(0, colonIndex).trim();
                 String headerValue = line.substring(colonIndex + 1).trim();
                 headers.put(headerName, headerValue);
-            } else {
-                throw new IOException(line);
             }
         }
 
@@ -162,9 +165,9 @@ public class Network {
 
     private void makeRequest(SSLSocket sslSocket, String host, String path) throws IOException {
         PrintWriter writer = new PrintWriter(sslSocket.getOutputStream(), true);
-        writer.println("Host: " + host);
         writer.println("GET " + path + " HTTP/1.1");
-        writer.println("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+        writer.println("Host: " + host);
+        writer.println("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36");
         writer.println("Connection: close");
         writer.println();
     }
