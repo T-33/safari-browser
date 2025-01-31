@@ -1,6 +1,5 @@
 package model;
 
-import model.baseproperties.PageRenderArea;
 import model.cssParser.parser.CSSParserFactory;
 import model.htmlParser.parser.Parser;
 import model.htmlParser.parser.ParserFactory;
@@ -14,28 +13,31 @@ import model.renderTree.RenderTreeBuilderFactory;
 import model.renderTree.StyleResolver;
 import model.renderTree.dom.RenderNode;
 
-import javax.swing.*;
-import java.awt.*;
-
 public final class Engine {
     private final ParserFactory parserFactory;
     private final CSSParserFactory cssParserFactory;
     private final RenderTreeBuilderFactory builderFactory;
     private final StyleResolver styleResolver;
+    private final LayoutEngine layoutEngine;
 
     public Engine(
             ParserFactory parserFactory,
             CSSParserFactory cssParserFactory,
             RenderTreeBuilderFactory builderFactory,
-            StyleResolver styleResolver
+            StyleResolver styleResolver, LayoutEngine layoutEngine
     ) {
         this.parserFactory = parserFactory;
         this.cssParserFactory = cssParserFactory;
         this.builderFactory = builderFactory;
         this.styleResolver = styleResolver;
+        this.layoutEngine = new LayoutEngine();
     }
 
-    public void renderPage(String htmlInput, String cssInput, view.Canvas canvas) {
+    public LayoutBox renderPage(String htmlInput, String cssInput, view.Canvas canvas) {
+        if (canvas == null) {
+            return null;
+        }
+
         Parser htmlParser = parserFactory.createParser(htmlInput);
         DomDocument doc = htmlParser.getDomDocument();
 
@@ -51,9 +53,12 @@ public final class Engine {
         rootBox.layout(null);
 
         root.render();
-        System.out.println("I happened");
-        System.out.println(PageRenderArea.getWidth() + " " +  PageRenderArea.getHeight());
+
+        if (canvas == null) {
+            return null;
+        }
 
         canvas.drawPage(rootBox);
+        return rootBox;
     }
 }

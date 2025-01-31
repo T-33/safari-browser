@@ -1,7 +1,6 @@
 package model.Network;
 
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 public class HttpResponse {

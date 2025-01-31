@@ -22,9 +22,12 @@ public class NavigationController {
     }
 
     public void addUrl(String url) {
-        model.renderPage(url);
         navigationModel.addUrl(url);
+        if (model.getCanvas() == null) {
+            return;
+        }
         System.out.println(CURRENT_URL + navigationModel.getCurrentUrl());
+        model.renderPage(url);
     }
 
     public String undo() {

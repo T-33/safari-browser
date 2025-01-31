@@ -3,10 +3,7 @@ package view;
 import controller.NavigationController;
 import custom.ActionButton;
 import custom.UrlField;
-import listeners.EnterKeyPredicate;
-import listeners.GenericKeyListeners;
-import listeners.SearchAction;
-import model.CustomCanvas;
+import listeners.*;
 import model.Model;
 import model.htmlParser.parser.dom.DomElement;
 import model.htmlParser.parser.dom.DomNode;
@@ -16,13 +13,22 @@ import model.layoutengine.layoutboxes.LayoutTextBox;
 import model.renderTree.dom.RenderElement;
 import model.renderTree.dom.RenderNode;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.BasicStroke;
+import java.awt.AlphaComposite;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Rectangle;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Dimension;
+import javax.swing.JPanel;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -51,16 +57,10 @@ public class Canvas extends JPanel {
      * Initializes the canvas with a URL input field, undo/redo buttons, and a search button.
      */
     public Canvas() {
-        //empty box later would be reassigned in drawPage method
         rootLayout = new LayoutBox(BoxType.BLOCK);
-        //stuff for links idk
-        addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                boolean overLink = clickableLinks.keySet().stream().anyMatch(rect -> rect.contains(e.getPoint()));
-                setCursor(overLink ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
-            }
-        });
+
+        addMouseMotionListener(new MouseHoverListener(this, clickableLinks));
+        addMouseListener(new MouseClickListener(this));
 
         setLayout(new BorderLayout());
 
@@ -143,7 +143,9 @@ public class Canvas extends JPanel {
             handleLink(g2d, layoutBox, domElement);
         }
 
-        layoutBox.getChildren().forEach(child -> drawLayout(g2d, child));
+        if (layoutBox.getChildren() != null) {
+            layoutBox.getChildren().forEach(child -> drawLayout(g2d, child));
+        }
     }
 
     private void drawText(Graphics2D g2d, LayoutTextBox layoutTextBox, DomElement domElement) {
@@ -152,37 +154,51 @@ public class Canvas extends JPanel {
             return;
         }
 
-        if (domElement == null && layoutTextBox.getRenderNode() != null) {
-            DomNode parentNode = layoutTextBox.getRenderNode().getDomNode().getParent();
+        if (domElement == null || domElement.getAttribute(Constants.ATTR_HREF) == null) {
+            DomNode parentNode = layoutTextBox.getRenderNode() != null
+                    ? layoutTextBox.getRenderNode().getDomNode().getParent()
+                    : null;
+
             if (parentNode instanceof DomElement parentElement) {
-                domElement = parentElement;
+                if (isLink(parentElement)) {
+                    domElement = parentElement;
+                }
             }
         }
 
-        if (domElement == null) {
-            g2d.setColor(CustomCanvas.Constants.DEFAULT_TEXT_COLOR);
-            g2d.setFont(new Font(CustomCanvas.Constants.DEFAULT_FONT_FAMILY, Font.PLAIN, CustomCanvas.Constants.DEFAULT_FONT_SIZE));
-            g2d.drawString(text, layoutTextBox.getX(), layoutTextBox.getY() + layoutTextBox.getHeight() - CustomCanvas.Constants.TEXT_VERTICAL_OFFSET);
+        boolean isLink = isLink(domElement);
+        if (isLink) {
+            g2d.setColor(Color.BLUE);
+            g2d.setFont(new Font(Constants.DEFAULT_FONT_FAMILY, Font.PLAIN | Font.ITALIC, Constants.DEFAULT_FONT_SIZE));
+
+            FontMetrics fontMetrics = g2d.getFontMetrics();
+            int textWidth = fontMetrics.stringWidth(text);
+            int textHeight = fontMetrics.getHeight();
+
+            clickableLinks.put(new Rectangle(
+                    layoutTextBox.getX(),
+                    layoutTextBox.getY() - textHeight,
+                    textWidth,
+                    textHeight
+            ), domElement.getAttribute(Constants.ATTR_HREF));
+        }
+        else {
+            g2d.setColor(Constants.DEFAULT_TEXT_COLOR);
+            g2d.setFont(new Font(Constants.DEFAULT_FONT_FAMILY, Font.PLAIN, Constants.DEFAULT_FONT_SIZE));
+            g2d.drawString(text, layoutTextBox.getX(), layoutTextBox.getY() + layoutTextBox.getHeight() - Constants.TEXT_VERTICAL_OFFSET);
             return;
         }
 
         Map<String, String> styles = domElement.getComputedStyle();
-
-        String textColor = styles.get(CustomCanvas.Constants.STYLE_COLOR);
-        g2d.setColor(parseColorOrDefault(textColor));
-
-        Font font = createFont(domElement);
-        g2d.setFont(font);
+        if (styles != null) {
+            String textColor = styles.get(Constants.STYLE_COLOR);
+            g2d.setColor(parseColorOrDefault(textColor));
+            Font font = createFont(domElement);
+            g2d.setFont(font);
+        }
 
         int x = layoutTextBox.getX();
-        int y = layoutTextBox.getY() + layoutTextBox.getHeight() - CustomCanvas.Constants.TEXT_VERTICAL_OFFSET;
-
-        String textAlign = styles.get(CustomCanvas.Constants.STYLE_TEXT_ALIGN);
-        if (CustomCanvas.Constants.ALIGN_CENTER.equalsIgnoreCase(textAlign)) {
-            x += (layoutTextBox.getWidth() - g2d.getFontMetrics().stringWidth(text)) / 2;
-        } else if (CustomCanvas.Constants.ALIGN_RIGHT.equalsIgnoreCase(textAlign)) {
-            x += layoutTextBox.getWidth() - g2d.getFontMetrics().stringWidth(text);
-        }
+        int y = layoutTextBox.getY() + layoutTextBox.getHeight() - Constants.TEXT_VERTICAL_OFFSET;
 
         g2d.drawString(text, x, y);
     }
@@ -193,7 +209,7 @@ public class Canvas extends JPanel {
 
         if (domElement == null) return;
 
-        BufferedImage image = Model.getInstance().fetchImage(domElement.getAttribute(CustomCanvas.Constants.ATTR_SRC));
+        BufferedImage image = Model.getInstance().fetchImage(domElement.getAttribute(Constants.ATTR_SRC));
         if (image == null) return;
 
         int x = layoutBox.getX();
@@ -209,17 +225,17 @@ public class Canvas extends JPanel {
             applyBackground(g2d, layoutBox, domElement.getComputedStyle());
             Map<String, String> styles = domElement.getComputedStyle();
 
-            if (styles.containsKey(CustomCanvas.Constants.STYLE_BORDER_COLOR) || styles.containsKey(CustomCanvas.Constants.STYLE_BORDER_WIDTH)) {
+            if (styles.containsKey(Constants.STYLE_BORDER_COLOR) || styles.containsKey(Constants.STYLE_BORDER_WIDTH)) {
                 applyBorder(g2d, layoutBox, styles);
             }
         }
 
-        g2d.setColor(CustomCanvas.Constants.DEFAULT_TEXT_COLOR);
+        g2d.setColor(Constants.DEFAULT_TEXT_COLOR);
         g2d.drawRect(layoutBox.getX(), layoutBox.getY(), layoutBox.getWidth(), layoutBox.getHeight());
     }
 
     private void handleLink(Graphics2D g2d, LayoutBox layoutBox, DomElement domElement) {
-        String href = domElement.getAttribute(CustomCanvas.Constants.ATTR_HREF);
+        String href = domElement.getAttribute(Constants.ATTR_HREF);
         if (href != null && !href.isEmpty()) {
             clickableLinks.put(new Rectangle(layoutBox.getX(), layoutBox.getY(), layoutBox.getWidth(), layoutBox.getHeight()), href);
 
@@ -228,25 +244,25 @@ public class Canvas extends JPanel {
         }
     }
 
-    private void handleLinkClick(Point clickPoint) {
+    public void handleLinkClick(Point clickPoint) {
         for (Map.Entry<Rectangle, String> entry : clickableLinks.entrySet()) {
             if (entry.getKey().contains(clickPoint)) {
-                openLink(entry.getValue());
+                String url = entry.getValue();
+                navigationController.addUrl(url);
+
+                LayoutBox newLayout = Model.getInstance().renderPage(url);
+                if (newLayout != null) {
+                    this.rootLayout = newLayout;
+                    this.revalidate();
+                    this.repaint();
+                }
                 break;
             }
         }
     }
 
-    private void openLink(String url) {
-        try {
-            Desktop.getDesktop().browse(new URI(url));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private boolean isLink(DomElement domElement) {
-        return domElement != null && CustomCanvas.Constants.TAG_A.equalsIgnoreCase(domElement.getTagName());
+        return domElement != null && domElement.getAttribute(Constants.ATTR_HREF) != null;
     }
 
     private boolean isImageBox(LayoutBox layoutBox) {
@@ -256,16 +272,16 @@ public class Canvas extends JPanel {
         }
 
         DomElement domElement = (DomElement) renderElement.getDomNode();
-        return CustomCanvas.Constants.TAG_IMG.equalsIgnoreCase(domElement.getTagName()) && domElement.getAttribute(CustomCanvas.Constants.ATTR_SRC) != null;
+        return Constants.TAG_IMG.equalsIgnoreCase(domElement.getTagName()) && domElement.getAttribute(Constants.ATTR_SRC) != null;
     }
 
     private Font createFont(DomElement domElement) {
-        String fontFamily = domElement != null ? domElement.getStyleProperty(CustomCanvas.Constants.STYLE_FONT_FAMILY) : CustomCanvas.Constants.DEFAULT_FONT_FAMILY;
-        String fontSize = domElement != null ? domElement.getStyleProperty(CustomCanvas.Constants.STYLE_FONT_SIZE) : null;
-        String fontWeight = domElement != null ? domElement.getStyleProperty(CustomCanvas.Constants.STYLE_FONT_WEIGHT) : null;
-        String fontStyle = domElement != null ? domElement.getStyleProperty(CustomCanvas.Constants.STYLE_FONT_STYLE) : null;
+        String fontFamily = domElement != null ? domElement.getStyleProperty(Constants.STYLE_FONT_FAMILY) : Constants.DEFAULT_FONT_FAMILY;
+        String fontSize = domElement != null ? domElement.getStyleProperty(Constants.STYLE_FONT_SIZE) : null;
+        String fontWeight = domElement != null ? domElement.getStyleProperty(Constants.STYLE_FONT_WEIGHT) : null;
+        String fontStyle = domElement != null ? domElement.getStyleProperty(Constants.STYLE_FONT_STYLE) : null;
 
-        int size = parseSize(fontSize, CustomCanvas.Constants.DEFAULT_FONT_SIZE);
+        int size = parseSize(fontSize, Constants.DEFAULT_FONT_SIZE);
         int style = parseFontStyle(fontWeight, fontStyle);
 
         return new Font(fontFamily, style, size);
@@ -281,7 +297,7 @@ public class Canvas extends JPanel {
     }
 
     private void applyBackground(Graphics2D g2d, LayoutBox layoutBox, Map<String, String> styles) {
-        String bgColor = styles.get(CustomCanvas.Constants.STYLE_BACKGROUND_COLOR);
+        String bgColor = styles.get(Constants.STYLE_BACKGROUND_COLOR);
         if (bgColor != null) {
             g2d.setColor(parseColor(bgColor));
             g2d.fillRect(layoutBox.getX(), layoutBox.getY(), layoutBox.getWidth(), layoutBox.getHeight());
@@ -289,7 +305,7 @@ public class Canvas extends JPanel {
     }
 
     private void applyOpacity(Graphics2D g2d, Map<String, String> styles) {
-        String opacity = styles.get(CustomCanvas.Constants.STYLE_OPACITY);
+        String opacity = styles.get(Constants.STYLE_OPACITY);
         if (opacity != null) {
             float alpha = parseOpacity(opacity);
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
@@ -297,10 +313,10 @@ public class Canvas extends JPanel {
     }
 
     private void applyBorder(Graphics2D g2d, LayoutBox layoutBox, Map<String, String> styles) {
-        String borderColor = styles.get(CustomCanvas.Constants.STYLE_BORDER_COLOR);
+        String borderColor = styles.get(Constants.STYLE_BORDER_COLOR);
         if (borderColor != null) {
             g2d.setColor(parseColor(borderColor));
-            int borderWidth = parseSize(styles.get(CustomCanvas.Constants.STYLE_BORDER_WIDTH), CustomCanvas.Constants.DEFAULT_BORDER_WIDTH);
+            int borderWidth = parseSize(styles.get(Constants.STYLE_BORDER_WIDTH), Constants.DEFAULT_BORDER_WIDTH);
             g2d.setStroke(new BasicStroke(borderWidth));
             g2d.drawRect(layoutBox.getX(), layoutBox.getY(), layoutBox.getWidth(), layoutBox.getHeight());
         }
@@ -308,25 +324,25 @@ public class Canvas extends JPanel {
 
     private Color parseColor(String color) {
         if (color == null || color.isEmpty()) {
-            return CustomCanvas.Constants.DEFAULT_TEXT_COLOR;
+            return Constants.DEFAULT_TEXT_COLOR;
         }
 
         try {
-            if (color.startsWith(CustomCanvas.Constants.ATTR_LATTICE)) {
+            if (color.startsWith(Constants.ATTR_LATTICE)) {
                 return Color.decode(color);
             }
 
             return switch (color.toLowerCase()) {
-                case CustomCanvas.Constants.COLOR_RED -> Color.RED;
-                case CustomCanvas.Constants.COLOR_BLUE -> Color.BLUE;
-                case CustomCanvas.Constants.COLOR_GREEN -> Color.GREEN;
-                case CustomCanvas.Constants.COLOR_BLACK -> Color.BLACK;
-                case CustomCanvas.Constants.COLOR_WHITE -> Color.WHITE;
-                case CustomCanvas.Constants.COLOR_GRAY -> Color.GRAY;
-                default -> CustomCanvas.Constants.DEFAULT_TEXT_COLOR;
+                case Constants.COLOR_RED -> Color.RED;
+                case Constants.COLOR_BLUE -> Color.BLUE;
+                case Constants.COLOR_GREEN -> Color.GREEN;
+                case Constants.COLOR_BLACK -> Color.BLACK;
+                case Constants.COLOR_WHITE -> Color.WHITE;
+                case Constants.COLOR_GRAY -> Color.GRAY;
+                default -> Constants.DEFAULT_TEXT_COLOR;
             };
         } catch (NumberFormatException e) {
-            return CustomCanvas.Constants.DEFAULT_TEXT_COLOR;
+            return Constants.DEFAULT_TEXT_COLOR;
         }
     }
 
@@ -334,7 +350,7 @@ public class Canvas extends JPanel {
         try {
             return parseColor(color);
         } catch (Exception e) {
-            return CustomCanvas.Constants.DEFAULT_TEXT_COLOR;
+            return Constants.DEFAULT_TEXT_COLOR;
         }
     }
 
@@ -343,17 +359,17 @@ public class Canvas extends JPanel {
             float opacity = Float.parseFloat(value);
             return Math.min(Math.max(opacity, 0), 1);
         } catch (NumberFormatException e) {
-            return CustomCanvas.Constants.DEFAULT_OPACITY;
+            return Constants.DEFAULT_OPACITY;
         }
     }
 
     private int parseFontStyle(String fontWeight, String fontStyle) {
         int style = Font.PLAIN;
 
-        if (CustomCanvas.Constants.FONT_STYLE_BOLD.equalsIgnoreCase(fontWeight)) {
+        if (Constants.FONT_STYLE_BOLD.equalsIgnoreCase(fontWeight)) {
             style |= Font.BOLD;
         }
-        if (CustomCanvas.Constants.FONT_STYLE_ITALIC.equalsIgnoreCase(fontStyle)) {
+        if (Constants.FONT_STYLE_ITALIC.equalsIgnoreCase(fontStyle)) {
             style |= Font.ITALIC;
         }
 
@@ -365,7 +381,7 @@ public class Canvas extends JPanel {
             return defaultValue;
         }
         try {
-            return Integer.parseInt(value.replace(CustomCanvas.Constants.ATTR_PX, CustomCanvas.Constants.ATTR_NONE).trim());
+            return Integer.parseInt(value.replace(Constants.ATTR_PX, Constants.ATTR_NONE).trim());
         } catch (NumberFormatException e) {
             return defaultValue;
         }

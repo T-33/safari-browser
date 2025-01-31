@@ -29,6 +29,10 @@ public class DomElement extends DomNode {
         return attributes.get(name);
     }
 
+    public void setAttribute(String name, String value) {
+        attributes.put(name, value);
+    }
+
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = (attributes == null) ? new HashMap<>() : attributes;
     }

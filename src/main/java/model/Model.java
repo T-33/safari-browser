@@ -1,6 +1,7 @@
 package model;
 
 import model.Network.Network;
+import model.layoutengine.layoutboxes.LayoutBox;
 import view.Canvas;
 
 import java.awt.image.BufferedImage;
@@ -9,11 +10,10 @@ public class Model {
     private static Model instance;
     private final Network network;
     private Canvas canvas;
-    private final Engine engine;
+    private Engine engine;
 
     private Model() {
         this.network = new Network();
-        engine = EngineFactory.createEngine();
     }
 
     public static Model getInstance() {
@@ -23,15 +23,22 @@ public class Model {
         return instance;
     }
 
-    public void setCanvas(Canvas canvas) {
-        this.canvas = canvas;
-    }
 
-    public void renderPage(String url) {
-        String fetchedHtml = fetchHtml(url);
-        String fetchedCss = fetchStyles(url);
+    public LayoutBox renderPage(String url) {
+        assert canvas != null;
 
-        engine.renderPage(fetchedHtml, fetchedCss, canvas);
+        if (engine == null) {
+            engine = EngineFactory.createEngine();
+        }
+
+        try {
+            String fetchedHtml = fetchHtml(url);
+            String fetchedCss = fetchStyles(url);
+            return engine.renderPage(fetchedHtml, fetchedCss, canvas);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -62,6 +69,14 @@ public class Model {
             return null;
         }
         return network.getImage(imageUrl);
+    }
+
+    public Canvas getCanvas() {
+        return canvas;
+    }
+
+    public void setCanvas(Canvas canvas) {
+        this.canvas = canvas;
     }
 
 }

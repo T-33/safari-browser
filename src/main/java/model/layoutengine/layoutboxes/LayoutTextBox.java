@@ -12,23 +12,13 @@ import java.awt.image.BufferedImage;
  * otherwise text would not be wrapped to new line correctly.
  */
 public class LayoutTextBox extends LayoutBox{
-    private final String text;
+    private String text;
     private final DomElement associatedElement;
 
     public LayoutTextBox(String text, DomElement associatedElement) {
         super(BoxType.INLINE);
         this.text = text;
         this.associatedElement = associatedElement;
-    }
-
-    /**
-     * Doesn't layout, because it will be broken into lineBoxes by parent inline element
-     * @param containingBox not needed, will be needed as layout becomes more complex.
-     */
-    @Override
-    public void layout(LayoutBox containingBox) {
-        setHeight(calculateHeight());
-        setWidth(calculateWidth());
     }
 
     /**
@@ -79,4 +69,13 @@ public class LayoutTextBox extends LayoutBox{
         return text;
     }
 
+    /**
+     * Doesn't layout, because it will be broken into lineBoxes by parent inline element
+     * @param containingBox not needed, will be needed as layout becomes more complex.
+     */
+    @Override
+    public void layout(LayoutBox containingBox) {
+        setHeight(calculateHeight());
+        setWidth(calculateWidth());
+    }
 }

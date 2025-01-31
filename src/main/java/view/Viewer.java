@@ -3,33 +3,37 @@ package view;
 import controller.NavigationController;
 import model.Model;
 import model.NavigationModel;
-import model.baseproperties.BaseProperties;
 import model.baseproperties.PageRenderArea;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
-public class MainView extends JFrame {
+public class Viewer extends JFrame {
     private Canvas canvas;
+    private final Model model = Model.getInstance();
 
     public static final int WIDTH = 1200;
     public static final int HEIGHT = 800;
     public static final String TITLE = "Safari Browser";
 
-    public MainView() {
+    public Viewer() {
         super(TITLE);
 
-        NavigationModel navModel = new NavigationModel();
-        Model model = Model.getInstance();
-        NavigationController controller = new NavigationController(navModel, model);
-
-        initializeUI();
-        canvas.setNavigationController(controller);
-
+        this.canvas = new Canvas();
         model.setCanvas(canvas);
 
-        final int scrollBarWidth = 20;
+        initializeUI();
+        if (canvas == null) {
+            return;
+        }
 
+        NavigationModel navModel = new NavigationModel();
+        NavigationController controller = new NavigationController(navModel, model);
+        canvas.setNavigationController(controller);
+
+        final int scrollBarWidth = 20;
         PageRenderArea.setWidth(WIDTH - scrollBarWidth);
         PageRenderArea.setHeight(HEIGHT);
     }
@@ -39,7 +43,6 @@ public class MainView extends JFrame {
         setSize(WIDTH, HEIGHT);
         setLayout(new BorderLayout());
 
-        canvas = new Canvas();
         canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         JScrollPane scrollPane = new JScrollPane(canvas);

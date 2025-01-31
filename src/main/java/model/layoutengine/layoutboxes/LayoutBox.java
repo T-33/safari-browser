@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public class LayoutBox {
     private final Rectangle contentArea;
-    private final List<LayoutBox> children;
+    private List<LayoutBox> children = new ArrayList<>();
     private final BoxType boxType;
     private RenderNode renderNode;
     private BufferedImage image;
@@ -29,7 +29,7 @@ public class LayoutBox {
 
     public LayoutBox(int x, int y, int width, int height, List<LayoutBox> children, BoxType boxType) {
         contentArea = new Rectangle(x, y, width, height);
-        this.children = children;
+        this.children = (children == null) ? new ArrayList<>() : children;
         this.boxType = boxType;
         lineBoxes = new ArrayList<>();
     }

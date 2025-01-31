@@ -32,9 +32,7 @@ public class LayoutEngine {
         boolean isBlock = true;
 
         if (renderNode.getDomNode() instanceof DomElement domElement) {
-            //ignore styles and scripts
             if(domElement.getTagName().equals("style") || domElement.getTagName().equals("script") || domElement.getTagName().equals("head")) {
-                // inline elements with no children are not rendered.
                 return new LayoutBox(BoxType.INLINE);
             }
 
@@ -96,6 +94,11 @@ public class LayoutEngine {
         }
 
         renderNode.setLayoutBox(rootBox);
+        return rootBox;
+    }
+
+    public LayoutBox createLayout(String html, String css) {
+        LayoutBox rootBox = new LayoutBox(0, 0, 800, 600, null, BoxType.BLOCK);
         return rootBox;
     }
 }
