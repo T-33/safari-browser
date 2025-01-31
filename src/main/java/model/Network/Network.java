@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Network {
-    private static final int TIMEOUT = 10000;
+    private static final int TIMEOUT = 20000;
     private static final int MAX_REDIRECTS = 5;
     private static List<URL> redirectedPages;
     private static URL url;
@@ -18,31 +18,30 @@ public class Network {
     public Network(){}
     public HttpResponse getResponse(String urlString) {
         try {
-            if(urlString.startsWith("http")){
+            if (urlString.startsWith("http")) {
                 url = new URL(urlString);
             } else if (urlString.contains(".")) {
-                url = new URL("https://"+ urlString);
-            }else{
+                url = new URL("https://" + urlString);
+            } else {
                 url = new URL(getGoogleReq(urlString));
             }
 
             String host = url.getHost();
-            int port = url.getProtocol().equalsIgnoreCase("https") ? 443 : 80;
             String path = url.getPath().isEmpty() ? "/" : url.getPath();
             if (url.getQuery() != null) {
                 path += "?" + url.getQuery();
             }
-            SSLSocketFactory sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            int port = url.getProtocol().equalsIgnoreCase("https") ? 443 : 80;
 
             for (int i = 0; i < MAX_REDIRECTS; i++) {
-                try (SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(host, port)) {
-                    sslSocket.startHandshake();
-                    sslSocket.setSoTimeout(TIMEOUT);
-                    makeRequest(sslSocket, host, path);
-                    HttpResponse response = readHttpResponse(sslSocket, url);
+                try (Socket socket = createSocket(url, host, port)) {
+                    makeRequest(socket, host, path);
+                    HttpResponse response = readHttpResponse(socket, url);
+
                     if (response.getStatusCode() == 200) {
                         return response;
                     }
+
                     if (response.getStatusCode() == 301 || response.getStatusCode() == 302 || response.getStatusCode() == 303) {
                         String newLocation = response.getHeaders().get("Location");
                         System.out.println(newLocation);
@@ -56,21 +55,23 @@ public class Network {
                         continue;
                     }
 
-                    throw new IOException("Error" + response.getStatusCode());
+                    throw new IOException("Error " + response.getStatusCode());
                 }
             }
-            throw new IOException("redirect limit reached");
+            throw new IOException("Redirect limit reached");
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-
-    private HttpResponse readHttpResponse(SSLSocket sslSocket, URL baseUrl) throws IOException {
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
+    private HttpResponse readHttpResponse(Socket socket, URL baseUrl) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String statusLine = reader.readLine();
+
+        if (statusLine == null) {
+            throw new IOException("Empty response from server");
+        }
 
         String[] statusParts = statusLine.split(" ", 3);
         if (statusParts.length < 3 || !statusParts[1].matches("\\d+")) {
@@ -162,8 +163,8 @@ public class Network {
         }
     }
 
-    private void makeRequest(SSLSocket sslSocket, String host, String path) throws IOException {
-        PrintWriter writer = new PrintWriter(sslSocket.getOutputStream(), true);
+    private void makeRequest(Socket socket, String host, String path) throws IOException {
+        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
         writer.println("GET " + path + " HTTP/1.1");
         writer.println("Host: " + host);
         writer.println("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36");
@@ -178,6 +179,21 @@ public class Network {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    private Socket createSocket(URL url, String host, int port) throws IOException {
+        if ("https".equalsIgnoreCase(url.getProtocol())) {
+            SSLSocketFactory sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(host, port);
+            sslSocket.startHandshake();
+            sslSocket.setSoTimeout(TIMEOUT);
+            return sslSocket;
+        } else {
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress(host, port), TIMEOUT);
+            socket.setSoTimeout(TIMEOUT);
+            return socket;
         }
     }
 }
