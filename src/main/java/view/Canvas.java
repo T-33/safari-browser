@@ -167,10 +167,24 @@ public class Canvas extends JPanel {
         }
 
         boolean isLink = isLink(domElement);
-        if (isLink) {
-            g2d.setColor(Color.BLUE);
-            g2d.setFont(new Font(Constants.DEFAULT_FONT_FAMILY, Font.PLAIN | Font.ITALIC, Constants.DEFAULT_FONT_SIZE));
+        Color textColor = isLink ? Color.BLUE : Constants.DEFAULT_TEXT_COLOR; // Цвет по умолчанию
 
+        if (domElement != null) {
+            Map<String, String> styles = domElement.getComputedStyle();
+            if (styles != null && styles.containsKey(Constants.STYLE_COLOR)) {
+                textColor = parseColorOrDefault(styles.get(Constants.STYLE_COLOR));
+            }
+        }
+
+        g2d.setColor(textColor);
+        g2d.setFont(createFont(domElement));
+
+        int x = layoutTextBox.getX();
+        int y = layoutTextBox.getY() + layoutTextBox.getHeight() - Constants.TEXT_VERTICAL_OFFSET;
+
+        g2d.drawString(text, x, y);
+
+        if (isLink) {
             FontMetrics fontMetrics = g2d.getFontMetrics();
             int textWidth = fontMetrics.stringWidth(text);
             int textHeight = fontMetrics.getHeight();
@@ -182,25 +196,6 @@ public class Canvas extends JPanel {
                     textHeight
             ), domElement.getAttribute(Constants.ATTR_HREF));
         }
-        else {
-            g2d.setColor(Constants.DEFAULT_TEXT_COLOR);
-            g2d.setFont(new Font(Constants.DEFAULT_FONT_FAMILY, Font.PLAIN, Constants.DEFAULT_FONT_SIZE));
-            g2d.drawString(text, layoutTextBox.getX(), layoutTextBox.getY() + layoutTextBox.getHeight() - Constants.TEXT_VERTICAL_OFFSET);
-            return;
-        }
-
-        Map<String, String> styles = domElement.getComputedStyle();
-        if (styles != null) {
-            String textColor = styles.get(Constants.STYLE_COLOR);
-            g2d.setColor(parseColorOrDefault(textColor));
-            Font font = createFont(domElement);
-            g2d.setFont(font);
-        }
-
-        int x = layoutTextBox.getX();
-        int y = layoutTextBox.getY() + layoutTextBox.getHeight() - Constants.TEXT_VERTICAL_OFFSET;
-
-        g2d.drawString(text, x, y);
     }
 
     private void drawImage(Graphics2D g2d, LayoutBox layoutBox) {
@@ -248,6 +243,7 @@ public class Canvas extends JPanel {
         for (Map.Entry<Rectangle, String> entry : clickableLinks.entrySet()) {
             if (entry.getKey().contains(clickPoint)) {
                 String url = entry.getValue();
+
                 navigationController.addUrl(url);
 
                 LayoutBox newLayout = Model.getInstance().renderPage(url);
@@ -289,6 +285,11 @@ public class Canvas extends JPanel {
 
     private void applyStyles(Graphics2D g2d, LayoutBox layoutBox, DomElement domElement) {
         if (domElement == null) return;
+
+        if (domElement != null && isLink(domElement)) {
+            String color = domElement.getStyleProperty(Constants.STYLE_COLOR);
+            g2d.setColor(parseColorOrDefault(color != null ? color : "blue"));
+        }
 
         Map<String, String> styles = domElement.getComputedStyle();
         applyBackground(g2d, layoutBox, styles);

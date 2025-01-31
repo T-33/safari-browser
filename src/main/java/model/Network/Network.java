@@ -55,6 +55,19 @@ public class Network {
                         continue;
                     }
 
+                    if (response.getStatusCode() == 404) {
+                        String newLocation = response.getHeaders().get("Location");
+                        if (newLocation != null) {
+                            url = new URL(url, newLocation);
+                            host = url.getHost();
+                            path = url.getPath().isEmpty() ? "/" : url.getPath();
+                            port = url.getProtocol().equalsIgnoreCase("https") ? 443 : 80;
+                            continue;
+                        }
+                        throw new IOException("Error " + response.getStatusCode());
+                    }
+
+
                     throw new IOException("Error " + response.getStatusCode());
                 }
             }
