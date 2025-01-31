@@ -1,5 +1,6 @@
 package model;
 
+import model.baseproperties.BaseProperties;
 import model.cssParser.parser.CSSParserFactory;
 import model.htmlParser.parser.Parser;
 import model.htmlParser.parser.ParserFactory;
