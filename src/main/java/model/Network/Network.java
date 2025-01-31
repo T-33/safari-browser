@@ -14,62 +14,55 @@ public class Network {
     private static final int TIMEOUT = 10000;
     private static final int MAX_REDIRECTS = 5;
     private static List<URL> redirectedPages;
+    private static URL url;
 
 
     public Network(){}
     public HttpResponse getResponse(String urlString) {
-        HttpResponse lastResponse = null;
-        redirectedPages = new ArrayList<>();
-        for (int i = 0; i < MAX_REDIRECTS; i++) {
-            try {
-                URL url = urlString.startsWith("http") ? new URL(urlString) :
-                        urlString.contains(".") ? new URL("https://" + urlString) :
-                                new URL(getGoogleReq(urlString));
-                redirectedPages.add(url);
-                String host = url.getHost();
-                String path = url.getPath().isEmpty() ? "/" : url.getPath();
-                String baseUrl = url.getProtocol() + "://" + host;
+        try {
+            if(urlString.startsWith("http")){
+                url = new URL(urlString);
+            } else if (urlString.contains(".")) {
+                url = new URL("https://"+ urlString);
+            }else{
+                url = new URL(getGoogleReq(urlString));
+            }
 
-                int port = url.getProtocol().equalsIgnoreCase("https") ? 443 : 80;
+            String host = url.getHost();
+            int port = url.getProtocol().equalsIgnoreCase("https") ? 443 : 80;
+            String path = url.getPath().isEmpty() ? "/" : url.getPath();
+            SSLSocketFactory sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
-                SSLSocketFactory sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-
+            for (int i = 0; i < MAX_REDIRECTS; i++) {
                 try (SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(host, port)) {
                     sslSocket.startHandshake();
                     sslSocket.setSoTimeout(TIMEOUT);
-                    sslSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
-
                     makeRequest(sslSocket, host, path);
                     HttpResponse response = readHttpResponse(sslSocket, url);
-                    lastResponse = response;
-
-                    int statusCode = response.getStatusCode();
-
-                    if ((statusCode == 301 || statusCode == 302 || statusCode == 303)) {
-                        String newLocation = response.getHeaders().get("Location");
-                        if (newLocation != null) {
-                            if (newLocation.startsWith("https://")) {
-                                urlString = newLocation;
-                            } else {
-                                urlString = baseUrl + (newLocation.startsWith("/") ? newLocation : "/" + newLocation);
-                            }
-                        }
-                    }
-                    if (urlString.equals("https://www.google.com/webhp") || redirectedPages.contains(new URL(urlString))) {
-                        return lastResponse;
-                    }
-
-                    if (statusCode == 200) {
+                    if (response.getStatusCode() == 200) {
                         return response;
                     }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+                    if (response.getStatusCode() == 301 || response.getStatusCode() == 302 || response.getStatusCode() == 303) {
+                        String newLocation = response.getHeaders().get("Location");
+                        System.out.println(newLocation);
+                        if (newLocation.equals("https://www.google.com/webhp")){
+                            return response;
+                        }
+                        url = new URL(url, newLocation);
+                        host = url.getHost();
+                        path = url.getPath().isEmpty() ? "/" : url.getPath();
+                        port = url.getProtocol().equalsIgnoreCase("https") ? 443 : 80;
+                        continue;
+                    }
 
-        System.out.println("Limit of redirects" + MAX_REDIRECTS);
-        return lastResponse;
+                    throw new IOException("Error" + response.getStatusCode());
+                }
+            }
+            throw new IOException("redirect limit reached");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
