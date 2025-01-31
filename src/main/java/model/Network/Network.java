@@ -15,7 +15,6 @@ public class Network {
     private static List<URL> redirectedPages;
     private static URL url;
 
-
     public Network(){}
     public HttpResponse getResponse(String urlString) {
         try {
@@ -181,6 +180,4 @@ public class Network {
             return null;
         }
     }
-
-
 }

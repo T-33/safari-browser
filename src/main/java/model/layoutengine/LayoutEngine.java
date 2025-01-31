@@ -26,7 +26,6 @@ public class LayoutEngine {
     /**
      * creates layout tree without calculating coordinates and size of boxes.
      *
-     * @param renderNode
      * @return layout tree.
      * @see model.renderTree.dom.RenderElement;
      */
