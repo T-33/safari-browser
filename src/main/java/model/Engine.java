@@ -41,7 +41,8 @@ public final class Engine {
         Parser htmlParser = parserFactory.createParser(htmlInput);
         DomDocument doc = htmlParser.getDomDocument();
 
-        CSSParser cssParser = cssParserFactory.createParser(cssInput);
+        //connect default css with fetched to get rid of incorrect display properties
+        CSSParser cssParser = cssParserFactory.createParser(cssInput + " " + BaseProperties.DEFAULT_CSS);
         StyleSheet styleSheet = cssParser.getStyleSheet();
 
         StyleResolver.applyStyles(doc, styleSheet);

@@ -1,6 +1,7 @@
 package model.layoutengine;
 
 import model.Model;
+import model.baseproperties.BaseProperties;
 import model.htmlParser.parser.dom.DomElement;
 import model.htmlParser.parser.dom.DomText;
 import model.layoutengine.layoutboxes.BoxType;
@@ -10,6 +11,7 @@ import model.renderTree.dom.RenderNode;
 import model.renderTree.dom.RenderText;
 
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 /**
  * Build tree of layout boxes for render tree, and assigns each render tree element its separate box.
@@ -32,7 +34,10 @@ public class LayoutEngine {
         boolean isBlock = true;
 
         if (renderNode.getDomNode() instanceof DomElement domElement) {
-            if(domElement.getTagName().equals("style") || domElement.getTagName().equals("script") || domElement.getTagName().equals("head")) {
+            //ignore styles and scripts
+            final List<String> ignoredTags = List.of("style", "script", "head");
+            if(ignoredTags.contains(domElement.getTagName())) {
+                // inline elements with no children are not rendered.
                 return new LayoutBox(BoxType.INLINE);
             }
 
@@ -62,8 +67,8 @@ public class LayoutEngine {
                         imageBox.setWidth(width);
                         imageBox.setHeight(height);
                     } else {
-                        imageBox.setWidth(image.getWidth());
-                        imageBox.setHeight(image.getHeight());
+                        imageBox.setWidth(BaseProperties.DEFAULT_IMAGE_WIDTH);
+                        imageBox.setHeight(BaseProperties.DEFAULT_IMAGE_HEIGHT);
                     }
 
                     imageBox.setRenderNode(renderNode);
@@ -94,11 +99,6 @@ public class LayoutEngine {
         }
 
         renderNode.setLayoutBox(rootBox);
-        return rootBox;
-    }
-
-    public LayoutBox createLayout(String html, String css) {
-        LayoutBox rootBox = new LayoutBox(0, 0, 800, 600, null, BoxType.BLOCK);
         return rootBox;
     }
 }
